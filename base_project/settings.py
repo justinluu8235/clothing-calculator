@@ -34,7 +34,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
-    "templatetest-env.eba-nu2i48bz.us-east-1.elasticbeanstalk.com",
+    "127.0.0.1"
 ]
 
 
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "main.apps.MainConfig",
-    "kitchen-assistant-env.eba-5fukkmch.us-west-2.elasticbeanstalk.com",
+    "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
 ]
 
 MIDDLEWARE = [
