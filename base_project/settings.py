@@ -48,8 +48,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "main.apps.MainConfig",
-    "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
+
 ]
+if os.environ.get("BEANSTALK_APP", None):
+    INSTALLED_APPS.append(os.environ["BEANSTALK_APP"])
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
