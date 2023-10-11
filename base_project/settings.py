@@ -34,7 +34,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+    "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com"
 ]
 
 
