@@ -51,8 +51,6 @@ INSTALLED_APPS = [
     "main.apps.MainConfig",
 
 ]
-if os.environ.get("BEANSTALK_APP", None):
-    INSTALLED_APPS.append(os.environ["BEANSTALK_APP"])
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
