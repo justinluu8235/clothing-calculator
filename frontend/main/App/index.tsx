@@ -16,7 +16,6 @@ const App = () => {
   return (
   <QueryClientProvider client={queryClient}>
     <div>
-      <h1>Hello World! test</h1>
       <StyleCalculator/>
     </div>
     </QueryClientProvider>

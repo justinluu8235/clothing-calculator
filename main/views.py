@@ -32,5 +32,5 @@ class StyleCalculatorView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
         price_point = StylePricePoint.objects.filter(style_category_id=data['style_category'], fabric_type_id=data['fabric_type'],
-                                       quantity_rage_id=data['quantity_range'])
+                                       quantity_range_id=data['quantity_range'], size=data['size'])
         return JsonResponse({'estimated_cost': price_point.first().estimated_cost})

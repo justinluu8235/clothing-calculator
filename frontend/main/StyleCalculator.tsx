@@ -7,11 +7,13 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
-const PROD_URL = 'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/app/style_calculator/'
-const LOCAL_URL = 'http://127.0.0.1:8000/app/style_calculator/'
+const ENDPOINT = 'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/'
+
+const URL = `${ENDPOINT}/app/style_calculator/`
 const fetchItems = async () => {
-    const result = await axios.get(LOCAL_URL)
+    const result = await axios.get(URL)
     return result.data
 }
 
@@ -20,12 +22,14 @@ export default function StyleCalculator () {
     const [selectedFabric, setSelectedFabric] = useState('')
     const [selectedQuantityRange, setSelectedQuantityRange] = useState('')
     const [selectedStyleCategory, setSelectedStyleCategory] = useState('')
-    const [cost, setCost] = useState('??')
+    const [size, setSize] = useState('')
+    const [cost, setCost] = useState('')
      useEffect(() => {
      if(data){
         setSelectedFabric(data['fabric_types'][0].id)
         setSelectedQuantityRange(data['quantity_ranges'][0].id)
         setSelectedStyleCategory(data['style_categories'][0].id)
+        setSize('small')
      }
   }, [data]);
     const csrfTokenInput = document.getElementsByName('csrfmiddlewaretoken')[0] as HTMLInputElement;
@@ -34,15 +38,17 @@ const CSRF_TOKEN = csrfTokenInput.value;
         const calcData = {
             'fabric_type': selectedFabric,
             'quantity_range': selectedQuantityRange,
-            'style_category': selectedStyleCategory
+            'style_category': selectedStyleCategory,
+            'size': size
         }
-        axios.post(LOCAL_URL, calcData, {
+        axios.post(URL, calcData, {
   headers: {
     'X-CSRFToken': CSRF_TOKEN,
   },
 })
         .then(response => {
             console.log('response', response)
+            setCost(response.data.estimated_cost)
         })
         .catch(err => {
             console.log('error', err)
@@ -52,6 +58,7 @@ const CSRF_TOKEN = csrfTokenInput.value;
 
     return (
     <Stack alignItems="center" useFlexGap gap="40px">
+    <Stack direction='row'>
     <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
     <Select
         value={selectedFabric}
@@ -72,6 +79,17 @@ const CSRF_TOKEN = csrfTokenInput.value;
     </Select>
     <FormHelperText>quantity range</FormHelperText>
     </FormControl>
+
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <Select
+        value={size}
+        onChange={(e) => setSize(e.target.value)}
+    >
+        {['x-small', 'small', 'medium', 'large', 'x-large'].map((size)=> {return <MenuItem value={size}>{size}</MenuItem>})}
+    </Select>
+    <FormHelperText>size</FormHelperText>
+    </FormControl>
+
     <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
             <Select
         value={selectedStyleCategory}
@@ -81,7 +99,12 @@ const CSRF_TOKEN = csrfTokenInput.value;
     </Select>
     <FormHelperText>style category</FormHelperText>
 </FormControl>
-    <Button variant="contained" onClick={handleCalculate}>Calculate</Button>
+</Stack>
+
+    <Button variant="outlined" onClick={handleCalculate}>Calculate</Button>
+    <Typography variant="h1" component="h2">
+  {cost && `$${cost}`}
+</Typography>
     </Stack>
     )
 }
