@@ -1,6 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import StyleCalculator from '../StyleCalculator'
+import { QueryClient, QueryClientProvider } from 'react-query';
+const queryClient = new QueryClient();
 
 const About = () => {
   return (
@@ -12,10 +14,12 @@ const About = () => {
 
 const App = () => {
   return (
+  <QueryClientProvider client={queryClient}>
     <div>
       <h1>Hello World! test</h1>
       <StyleCalculator/>
     </div>
+    </QueryClientProvider>
   );
 };
 

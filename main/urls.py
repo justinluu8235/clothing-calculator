@@ -4,6 +4,7 @@ from . import views
 
 # comment
 urlpatterns = [
-    re_path(r"", views.index, name='index'),
     path('style_calculator/', StyleCalculatorView.as_view(), name='style_calculator'),
+    re_path(r"", views.index, name='index'),
+
 ]
