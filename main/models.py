@@ -5,17 +5,19 @@ from django.db import models
 class QuantityRange(models.Model):
     start_quantity = models.IntegerField()
     end_quantity = models.IntegerField()
+    class Meta:
+        unique_together = ('start_quantity', 'end_quantity')
 
 
 class FabricType(models.Model):
-    fabric_name = models.CharField(max_length=100, null=False)
+    fabric_name = models.CharField(max_length=100, null=False, unique=True)
 
     def __str__(self):
         return self.fabric_name
 
 
 class StyleCategory(models.Model):
-    style_category_name = models.CharField(max_length=100, null=False)
+    style_category_name = models.CharField(max_length=100, null=False, unique=True)
 
 
 SIZE_CHOICES = [('x-small', "x-small"), ('small', 'small'), ('medium', 'medium'), ('large', 'large'), ('x-large', 'x-large')]
