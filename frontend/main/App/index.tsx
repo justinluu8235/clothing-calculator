@@ -1,5 +1,6 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import StyleCalculator from '../StyleCalculator'
 
 const About = () => {
   return (
@@ -12,7 +13,8 @@ const About = () => {
 const App = () => {
   return (
     <div>
-      <h1>Hello World</h1>
+      <h1>Hello World!</h1>
+      <StyleCalculator/>
     </div>
   );
 };
