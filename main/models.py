@@ -8,6 +8,9 @@ class QuantityRange(models.Model):
     class Meta:
         unique_together = ('start_quantity', 'end_quantity')
 
+    def __str__(self):
+        return f'{self.start_quantity} - {self.end_quantity}'
+
 
 class FabricType(models.Model):
     fabric_name = models.CharField(max_length=100, null=False, unique=True)
@@ -18,6 +21,9 @@ class FabricType(models.Model):
 
 class StyleCategory(models.Model):
     style_category_name = models.CharField(max_length=100, null=False, unique=True)
+
+    def __str__(self):
+        return self.style_category_name
 
 
 SIZE_CHOICES = [('x-small', "x-small"), ('small', 'small'), ('medium', 'medium'), ('large', 'large'), ('x-large', 'x-large')]
