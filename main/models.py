@@ -32,5 +32,6 @@ class StylePricePoint(models.Model):
     fabric_type = models.ForeignKey(FabricType, on_delete=models.CASCADE)
     quantity_range = models.ForeignKey(QuantityRange, on_delete=models.CASCADE)
     size = models.CharField(max_length=100, choices=SIZE_CHOICES, null=False)
+    estimated_cost = models.IntegerField(null=False)
 
 
