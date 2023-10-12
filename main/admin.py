@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import QuantityRange, FabricType, StyleCategory, StylePricePoint
+
+admin.site.register(QuantityRange)
+admin.site.register(FabricType)
+admin.site.register(StyleCategory)
+admin.site.register(StylePricePoint)
+
