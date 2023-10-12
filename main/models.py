@@ -10,6 +10,9 @@ class QuantityRange(models.Model):
 class FabricType(models.Model):
     fabric_name = models.CharField(max_length=100, null=False)
 
+    def __str__(self):
+        return self.fabric_name
+
 
 class StyleCategory(models.Model):
     style_category_name = models.CharField(max_length=100, null=False)
