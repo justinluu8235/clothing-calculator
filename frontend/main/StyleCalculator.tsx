@@ -29,7 +29,7 @@ export default function StyleCalculator () {
         setSelectedFabric(data['fabric_types'][0].id)
         setSelectedQuantityRange(data['quantity_ranges'][0].id)
         setSelectedStyleCategory(data['style_categories'][0].id)
-        setSize('small')
+        setSize('3 sizes (S, M, L)')
      }
   }, [data]);
     const csrfTokenInput = document.getElementsByName('csrfmiddlewaretoken')[0] as HTMLInputElement;
