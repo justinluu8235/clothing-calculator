@@ -85,7 +85,7 @@ const CSRF_TOKEN = csrfTokenInput.value;
         value={size}
         onChange={(e) => setSize(e.target.value)}
     >
-        {['x-small', 'small', 'medium', 'large', 'x-large'].map((size)=> {return <MenuItem value={size}>{size}</MenuItem>})}
+        {['3 sizes (S, M, L)' , '5 sizes (XS, S, M, L, XL)'].map((size)=> {return <MenuItem value={size}>{size}</MenuItem>})}
     </Select>
     <FormHelperText>size</FormHelperText>
     </FormControl>
