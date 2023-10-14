@@ -9,7 +9,13 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-const ENDPOINT = 'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/'
+let ENDPOINT = ''
+if(process.env.NODE_ENV === 'development'){
+    ENDPOINT = 'http://127.0.0.1:8000'
+}
+else{
+    ENDPOINT = 'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/'
+}
 
 const URL = `${ENDPOINT}/app/style_calculator/`
 const fetchItems = async () => {
