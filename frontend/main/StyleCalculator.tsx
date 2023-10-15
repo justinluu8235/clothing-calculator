@@ -65,11 +65,33 @@ export default function StyleCalculator() {
         console.log("error", err);
       });
   };
+  const getStyleLabel = (styleId) => {
+    if(data){
+        const selectedStyleType = data['style_categories'].filter((styleType) => {return styleId == styleType.id})
+
+        return selectedStyleType[0].label
+    }
+  }
+
+//   const imageExists = (style) => {
+//     const image_url = `../../static/style_pics/${style}.png`
+//     var http = new XMLHttpRequest();
+//
+//     http.open('HEAD', image_url, false);
+//     http.send();
+//
+//     return http.status != 404;
+//
+// }
 
   return (
     <Stack alignItems="center" useFlexGap gap="40px" sx={{marginTop:'35px'}}>
-      <img style={{width: '200px', height: '200px', border: "1px solid grey"
-      }} src="../../static/style_pics/shirt.png"/>
+    {selectedStyleCategory  && (
+          <img style={{width: '200px', height: '200px', border: "1px solid grey"}}
+          src={`../../static/style_pics/${getStyleLabel(selectedStyleCategory)}.png`}
+            />
+        )}
+
       <Stack direction="row">
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
