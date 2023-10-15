@@ -29,7 +29,7 @@ This project is built to be deployed on AWS ElasticBeanstalk. To do so,
 do the following:
 
 1. Run `npm run build` and `npm run tailwind:dev` once to get the static
-files generated in the dist folder. Then run `./manage.py collectstatic` to
+files generated in the dist folder. Then run `python3 manage.py collectstatic` to
 get those into django's static directory.
 2. It's usually a good idea to create a new AWS account for each app you 
 build. So get that stuff set up first and once you have the profile setup

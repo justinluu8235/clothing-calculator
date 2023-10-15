@@ -546,3 +546,7 @@ video {
     max-width: 1536px;
   }
 }
+
+.border {
+  border-width: 1px;
+}
