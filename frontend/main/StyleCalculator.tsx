@@ -96,7 +96,10 @@ export default function StyleCalculator() {
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
             value={selectedFabric}
-            onChange={(e) => setSelectedFabric(e.target.value)}
+            onChange={(e) => {
+            setSelectedFabric(e.target.value)
+            setCost("")
+            }}
           >
             {data &&
               data["fabric_types"].map((fabricType) => {
@@ -111,7 +114,10 @@ export default function StyleCalculator() {
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
             value={selectedQuantityRange}
-            onChange={(e) => setSelectedQuantityRange(e.target.value)}
+            onChange={(e) => {
+            setSelectedQuantityRange(e.target.value)
+            setCost("")
+            }}
           >
             {data &&
               data["quantity_ranges"].map((quantityRange) => {
@@ -126,7 +132,10 @@ export default function StyleCalculator() {
         </FormControl>
 
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+          <Select value={size} onChange={(e) => {
+          setSize(e.target.value)
+          setCost("")
+          }}>
             {["3 sizes (S, M, L)", "5 sizes (XS, S, M, L, XL)"].map((size) => {
               return <MenuItem value={size}>{size}</MenuItem>;
             })}
@@ -137,7 +146,10 @@ export default function StyleCalculator() {
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
             value={selectedStyleCategory}
-            onChange={(e) => setSelectedStyleCategory(e.target.value)}
+            onChange={(e) => {
+            setSelectedStyleCategory(e.target.value)
+            setCost("")
+            }}
           >
             {data &&
               data["style_categories"].map((styleCategory) => {
