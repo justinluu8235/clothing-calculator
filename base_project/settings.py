@@ -36,6 +36,7 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com"
+    "35.83.40.87",
 ]
 
 
