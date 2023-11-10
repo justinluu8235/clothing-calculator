@@ -34,9 +34,16 @@ export default function StyleCalculator() {
   const [cost, setCost] = useState("");
   useEffect(() => {
     if (data) {
-      setSelectedFabric(data["fabric_types"][0].id);
-      setSelectedQuantityRange(data["quantity_ranges"][0].id);
-      setSelectedStyleCategory(data["style_categories"][0].id);
+       console.log('data', data)
+       if(data['fabric_types'].length > 0){
+        setSelectedFabric(data["fabric_types"][0].id);
+       }
+       if(data['quantity_ranges'].length > 0){
+        setSelectedFabric(data["quantity_ranges"][0].id);
+       }
+       if(data['style_categories'].length > 0){
+        setSelectedFabric(data["style_categories"][0].id);
+       }
       setSize("3 sizes (S, M, L)");
     }
   }, [data]);
@@ -72,17 +79,6 @@ export default function StyleCalculator() {
         return selectedStyleType[0].label
     }
   }
-
-//   const imageExists = (style) => {
-//     const image_url = `../../static/style_pics/${style}.png`
-//     var http = new XMLHttpRequest();
-//
-//     http.open('HEAD', image_url, false);
-//     http.send();
-//
-//     return http.status != 404;
-//
-// }
 
   return (
     <Stack alignItems="center" useFlexGap gap="40px" sx={{marginTop:'35px'}}>
