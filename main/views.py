@@ -13,6 +13,7 @@ class StyleCalculatorView(View):
         quantity_ranges = QuantityRange.objects.all()
         fabric_types = FabricType.objects.all()
         style_categories = StyleCategory.objects.all()
+        style_cat_serializer = StyleCategorySerializer(style_categories, many=True)
         fabrics = []
         quantitys = []
         categories = []
@@ -26,6 +27,7 @@ class StyleCalculatorView(View):
             'quantity_ranges': quantitys,
             'fabric_types': fabrics,
             'style_categories': categories,
+            'serialized_style_categories': style_cat_serializer.data
         }
         return JsonResponse(response)
 

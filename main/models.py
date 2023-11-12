@@ -21,6 +21,7 @@ class FabricType(models.Model):
 
 class StyleCategory(models.Model):
     style_category_name = models.CharField(max_length=100, null=False, unique=True)
+    image = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return self.style_category_name
