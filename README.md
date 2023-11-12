@@ -19,7 +19,7 @@ A template for a Django project with a React frontend. Supports the following:
 After these steps, you should have an app that is fully ready to go. 
 
 You can now run the following in 3 different terminal tabs:
- - `./manage.py runserver`
+ - `python3 manage.py runserver`
  - `npm run start:dev`
  - `npm run tailwind:dev`
 
