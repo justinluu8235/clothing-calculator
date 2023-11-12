@@ -161,10 +161,11 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 S3DIRECT_REGION = 'us-west-2'
 AWS_LOCATION = 'static'
-
+# when STATIC_URL and STATICFILE_STORAGE are on here, even when running locally, it serves the production
+# code that we last ran collectstatic on.
 STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = STATICFILES_STORAGE
+DEFAULT_FILE_STORAGE = STATICFILES_STORAGE   # this default file uploads to s3
 
 
 STATICFILES_DIRS = [
