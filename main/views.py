@@ -23,11 +23,15 @@ class StyleCalculatorView(View):
             quantitys.append({'id': quantity_range.id, 'label': quantity_range.__str__()})
         for style_category in style_categories:
             categories.append({'id': style_category.id, 'label': style_category.style_category_name})
+        style_cat_serialized_by_id = {}
+        for style_cat in style_cat_serializer.data:
+            style_cat_serialized_by_id[style_cat.get('id')] = style_cat
+
         response = {
             'quantity_ranges': quantitys,
             'fabric_types': fabrics,
             'style_categories': categories,
-            'serialized_style_categories': style_cat_serializer.data
+            'serialized_style_categories_by_id': style_cat_serialized_by_id
         }
         return JsonResponse(response)
 

@@ -39,10 +39,10 @@ export default function StyleCalculator() {
         setSelectedFabric(data["fabric_types"][0].id);
        }
        if(data['quantity_ranges'].length > 0){
-        setSelectedFabric(data["quantity_ranges"][0].id);
+        setSelectedQuantityRange(data["quantity_ranges"][0].id);
        }
        if(data['style_categories'].length > 0){
-        setSelectedFabric(data["style_categories"][0].id);
+        setSelectedStyleCategory(`${data["style_categories"][0].id}`);
        }
       setSize("3 sizes (S, M, L)");
     }
@@ -79,12 +79,11 @@ export default function StyleCalculator() {
         return selectedStyleType[0].label
     }
   }
-
   return (
     <Stack alignItems="center" useFlexGap gap="40px" sx={{marginTop:'35px'}}>
     {selectedStyleCategory  && (
           <img style={{width: '200px', height: '200px', border: "1px solid grey"}}
-          src={`../../static/style_pics/${getStyleLabel(selectedStyleCategory)}.png`}
+          src={`https://app-data-justin-l.s3.amazonaws.com/static${data['serialized_style_categories_by_id'][selectedStyleCategory]['image']}`}
             />
         )}
 
