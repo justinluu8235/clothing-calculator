@@ -1,6 +1,7 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import StyleCalculator from '../StyleCalculator'
+import Login from '../Login'
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     path: "app/about",
     element: <About />,
   },
+  {
+  path: 'app/login',
+  element: <Login/>
+  }
 ]);
 
 const AppWithRouter = () => {

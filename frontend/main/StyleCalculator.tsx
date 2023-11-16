@@ -83,10 +83,7 @@ export default function StyleCalculator() {
     <Stack alignItems="center" useFlexGap gap="40px" sx={{marginTop:'35px'}}>
     {selectedStyleCategory  && (
           <img style={{width: '200px', height: '200px', border: "1px solid grey"}}
-// below for dev
-//           src={`https://app-data-justin-l.s3.amazonaws.com/static${data['serialized_style_categories_by_id'][selectedStyleCategory]['image']}`}
           src={`${data['serialized_style_categories_by_id'][selectedStyleCategory]['image']}`}
-
             />
         )}
 
