@@ -18,10 +18,12 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("app/", include("main.urls")),
+    path('login/', LoginView.as_view(), name='login' ),
     path('', RedirectView.as_view(url='app/', permanent=True)),
 ]
 
