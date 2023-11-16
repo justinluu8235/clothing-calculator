@@ -146,10 +146,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 
 # FOR S3 STORAGE
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY')
@@ -161,11 +158,20 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 S3DIRECT_REGION = 'us-west-2'
 AWS_LOCATION = 'static'
+
 # when STATIC_URL and STATICFILE_STORAGE are on here, even when running locally, it serves the production
 # code that we last ran collectstatic on.
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
-STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-DEFAULT_FILE_STORAGE = STATICFILES_STORAGE   # this default file uploads to s3
+if not os.environ.get('LOCAL_DEV'):
+    STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = STATICFILES_STORAGE   # this default file uploads to s3
+else:
+    # Static files (CSS, JavaScript, Images)
+    # https://docs.djangoproject.com/en/4.1/howto/static-files/
+    STATIC_URL = "static/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
+    MEDIA_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
+
 
 
 STATICFILES_DIRS = [
