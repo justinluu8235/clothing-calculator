@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import setAuthToken from './App/utils/setAuthToken'
+import getCookie from './App/utils/getCookie'
 import { jwtDecode } from 'jwt-decode';
 import { Navigate } from "react-router-dom";
 
@@ -36,7 +37,7 @@ export default function Login({nowCurrentUser}: LoginProps){
 axios
       .post(`${ENDPOINT}/login/`, loginData, {
         headers: {
-          "X-CSRFToken": CSRF_TOKEN,
+          "X-CSRFToken": getCookie('csrftoken'),
         },
       })
       .then((response) => {

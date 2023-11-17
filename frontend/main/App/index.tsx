@@ -93,7 +93,6 @@ const AppWithRouter = () => {
     handleLogout();
   }
   }
-
   return (
     <React.StrictMode>
     <QueryClientProvider client={queryClient}>

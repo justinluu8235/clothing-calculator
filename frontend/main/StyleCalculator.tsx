@@ -10,6 +10,8 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { Link, Navigate } from "react-router-dom";
+import getCookie from './App/utils/getCookie'
+
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -74,11 +76,10 @@ export default function StyleCalculator({currentUser}: StyleCalculatorProps) {
       style_category: selectedStyleCategory,
       size: size,
     };
-    console.log('csrg token', CSRF_TOKEN)
     axios
       .post(`${URL}${currentUser.id}`, calcData, {
         headers: {
-          "X-CSRFToken": CSRF_TOKEN,
+          "X-CSRFToken": getCookie('csrftoken'),
         },
       })
       .then((response) => {
