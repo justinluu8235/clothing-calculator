@@ -1,9 +1,26 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import { createBrowserRouter, RouterProvider, BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
 import StyleCalculator from '../StyleCalculator'
 import Login from '../Login'
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
+import { jwtDecode } from 'jwt-decode';
+import setAuthToken from './utils/setAuthToken';
+import axios from 'axios'
+
+let ENDPOINT = "";
+if (process.env.NODE_ENV === "development") {
+  ENDPOINT = "http://127.0.0.1:8000";
+} else {
+  ENDPOINT =
+    "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/";
+}
+  const csrfTokenInput = document.getElementsByName(
+    "csrfmiddlewaretoken"
+  )[0] as HTMLInputElement;
+  const CSRF_TOKEN = csrfTokenInput.value;
+
+
 
 const About = () => {
   return (
@@ -13,35 +30,87 @@ const About = () => {
   );
 };
 
-const App = () => {
+interface AppProps {
+  currentUser: any
+}
+
+const App = ({currentUser}: AppProps) => {
+
   return (
-  <QueryClientProvider client={queryClient}>
     <div>
-      <StyleCalculator/>
+      <StyleCalculator currentUser={currentUser}/>
     </div>
-    </QueryClientProvider>
   );
 };
 
-const router = createBrowserRouter([
-  {
-    path: "app",
-    element: <App />,
-  },
-  {
-    path: "app/about",
-    element: <About />,
-  },
-  {
-  path: 'app/login',
-  element: <Login/>
-  }
-]);
+
 
 const AppWithRouter = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+    useEffect(() => {
+    let token;
+
+    if (!localStorage.getItem('jwtToken')) {
+      setIsAuthenticated(false);
+    } else {
+      token = jwtDecode(localStorage.getItem('jwtToken'));
+      setAuthToken(localStorage.getItem('jwtToken'));
+      setCurrentUser(token);
+      console.log(token);
+    }
+  }, []);
+
+    const nowCurrentUser = (userData) => {
+    setCurrentUser(userData);
+    setIsAuthenticated(true);
+  }
+
+
+
+
+  const handleLogout = () => {
+    if (localStorage.getItem('jwtToken')) {
+        // remove token for localStorage
+        localStorage.removeItem('jwtToken');
+        setCurrentUser(null);
+        setIsAuthenticated(false);
+
+    }
+    axios.get(`${ENDPOINT}/logout/`)
+    .then((res) =>{
+      alert("you are now logged out")
+      return <Navigate  to="/app/login"/>
+    })
+
+  }
+  if(currentUser){
+    const {exp} = currentUser
+      // make a condition that compares exp and current time
+  const expirationTime = new Date(exp * 1000);
+  let currentTime = Date.now();
+  console.log('currentTime', currentTime)
+  console.log('expirationTime,', expirationTime)
+  if (currentTime >= expirationTime.getTime()) {
+    handleLogout();
+
+  }
+  }
+
+
+
   return (
     <React.StrictMode>
-      <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+    <Router>
+    <Routes>
+            <Route path="/app" element={<App currentUser={currentUser}/>}/>
+        <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser}/>}/>
+        <Route path="/app/about" element={<About/>}/>
+    </Routes>
+
+    </Router>
+    </QueryClientProvider>
     </React.StrictMode>
   );
 };

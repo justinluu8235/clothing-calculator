@@ -8,8 +8,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Box from '@mui/material/Box';
-
+import Box from "@mui/material/Box";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -18,6 +17,10 @@ if (process.env.NODE_ENV === "development") {
   ENDPOINT =
     "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/";
 }
+  const csrfTokenInput = document.getElementsByName(
+    "csrfmiddlewaretoken"
+  )[0] as HTMLInputElement;
+  const CSRF_TOKEN = csrfTokenInput.value;
 
 const URL = `${ENDPOINT}/app/style_calculator/`;
 const fetchItems = async () => {
@@ -25,7 +28,14 @@ const fetchItems = async () => {
   return result.data;
 };
 
-export default function StyleCalculator() {
+
+interface StyleCalculatorProps {
+  currentUser: any
+}
+
+export default function StyleCalculator({currentUser}: StyleCalculatorProps) {
+console.log('currentUser', currentUser)
+//     const { userId, userEmail, expiration } = currentUser;
   const { isLoading, error, data } = useQuery("style", fetchItems);
   const [selectedFabric, setSelectedFabric] = useState("");
   const [selectedQuantityRange, setSelectedQuantityRange] = useState("");
@@ -34,23 +44,20 @@ export default function StyleCalculator() {
   const [cost, setCost] = useState("");
   useEffect(() => {
     if (data) {
-       console.log('data', data)
-       if(data['fabric_types'].length > 0){
+      console.log("data", data);
+      if (data["fabric_types"].length > 0) {
         setSelectedFabric(data["fabric_types"][0].id);
-       }
-       if(data['quantity_ranges'].length > 0){
+      }
+      if (data["quantity_ranges"].length > 0) {
         setSelectedQuantityRange(data["quantity_ranges"][0].id);
-       }
-       if(data['style_categories'].length > 0){
+      }
+      if (data["style_categories"].length > 0) {
         setSelectedStyleCategory(`${data["style_categories"][0].id}`);
-       }
+      }
       setSize("3 sizes (S, M, L)");
     }
   }, [data]);
-  const csrfTokenInput = document.getElementsByName(
-    "csrfmiddlewaretoken"
-  )[0] as HTMLInputElement;
-  const CSRF_TOKEN = csrfTokenInput.value;
+
   const handleCalculate = () => {
     const calcData = {
       fabric_type: selectedFabric,
@@ -73,27 +80,30 @@ export default function StyleCalculator() {
       });
   };
   const getStyleLabel = (styleId) => {
-    if(data){
-        const selectedStyleType = data['style_categories'].filter((styleType) => {return styleId == styleType.id})
+    if (data) {
+      const selectedStyleType = data["style_categories"].filter((styleType) => {
+        return styleId == styleType.id;
+      });
 
-        return selectedStyleType[0].label
+      return selectedStyleType[0].label;
     }
-  }
+  };
   return (
-    <Stack alignItems="center" useFlexGap gap="40px" sx={{marginTop:'35px'}}>
-    {selectedStyleCategory  && (
-          <img style={{width: '200px', height: '200px', border: "1px solid grey"}}
-          src={`${data['serialized_style_categories_by_id'][selectedStyleCategory]['image']}`}
-            />
-        )}
+    <Stack alignItems="center" useFlexGap gap="40px" sx={{ marginTop: "35px" }}>
+      {selectedStyleCategory && (
+        <img
+          style={{ width: "200px", height: "200px", border: "1px solid grey" }}
+          src={`${data["serialized_style_categories_by_id"][selectedStyleCategory]["image"]}`}
+        />
+      )}
 
       <Stack direction="row">
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
           <Select
             value={selectedFabric}
             onChange={(e) => {
-            setSelectedFabric(e.target.value)
-            setCost("")
+              setSelectedFabric(e.target.value);
+              setCost("");
             }}
           >
             {data &&
@@ -110,8 +120,8 @@ export default function StyleCalculator() {
           <Select
             value={selectedQuantityRange}
             onChange={(e) => {
-            setSelectedQuantityRange(e.target.value)
-            setCost("")
+              setSelectedQuantityRange(e.target.value);
+              setCost("");
             }}
           >
             {data &&
@@ -127,10 +137,13 @@ export default function StyleCalculator() {
         </FormControl>
 
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-          <Select value={size} onChange={(e) => {
-          setSize(e.target.value)
-          setCost("")
-          }}>
+          <Select
+            value={size}
+            onChange={(e) => {
+              setSize(e.target.value);
+              setCost("");
+            }}
+          >
             {["3 sizes (S, M, L)", "5 sizes (XS, S, M, L, XL)"].map((size) => {
               return <MenuItem value={size}>{size}</MenuItem>;
             })}
@@ -142,8 +155,8 @@ export default function StyleCalculator() {
           <Select
             value={selectedStyleCategory}
             onChange={(e) => {
-            setSelectedStyleCategory(e.target.value)
-            setCost("")
+              setSelectedStyleCategory(e.target.value);
+              setCost("");
             }}
           >
             {data &&
@@ -162,25 +175,25 @@ export default function StyleCalculator() {
       <Button variant="outlined" onClick={handleCalculate}>
         Calculate
       </Button>
-      {cost &&
-//       <Box
-//       sx={{
-//           width: 500,
-//           border: "1px solid grey",
-//           borderRadius: "10px",
-//           padding: "10px",
-//           "&:hover": {
-//             border: "1px solid blue",
-//           },
-//       }}
-//     >
-    <Typography variant="h1" component="h2">
-        {`$${cost}`}
-      </Typography>
-//     </Box>
+      {
+        cost && (
+          //       <Box
+          //       sx={{
+          //           width: 500,
+          //           border: "1px solid grey",
+          //           borderRadius: "10px",
+          //           padding: "10px",
+          //           "&:hover": {
+          //             border: "1px solid blue",
+          //           },
+          //       }}
+          //     >
+          <Typography variant="h1" component="h2">
+            {`$${cost}`}
+          </Typography>
+        )
+        //     </Box>
       }
-
-
     </Stack>
   );
 }
