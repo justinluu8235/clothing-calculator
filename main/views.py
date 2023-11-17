@@ -5,11 +5,17 @@ from django.http import HttpResponse, JsonResponse
 from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory
 from .serializers import StyleCategorySerializer, QuantityRangeSerializer, FabricTypeSerializer, StylePricePointSerializer
 import json
+from .auth_helpers import validate_token
 def index(request):
     return render(request, 'index.html')
 
 class StyleCalculatorView(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+
         quantity_ranges = QuantityRange.objects.all()
         fabric_types = FabricType.objects.all()
         style_categories = StyleCategory.objects.all()
@@ -35,7 +41,12 @@ class StyleCalculatorView(View):
         }
         return JsonResponse(response)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request,  user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+
         data = json.loads(request.body)
         price_point = StylePricePoint.objects.filter(style_category_id=data['style_category'], fabric_type_id=data['fabric_type'],
                                        quantity_range_id=data['quantity_range'], size=data['size'])

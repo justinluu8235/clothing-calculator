@@ -9,6 +9,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { Link, Navigate } from "react-router-dom";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -17,15 +18,25 @@ if (process.env.NODE_ENV === "development") {
   ENDPOINT =
     "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/";
 }
-  const csrfTokenInput = document.getElementsByName(
-    "csrfmiddlewaretoken"
-  )[0] as HTMLInputElement;
-  const CSRF_TOKEN = csrfTokenInput.value;
+
+
+const csrfTokenInput = document.getElementsByName(
+"csrfmiddlewaretoken"
+)[0] as HTMLInputElement;
+const CSRF_TOKEN = csrfTokenInput.value;
+
 
 const URL = `${ENDPOINT}/app/style_calculator/`;
-const fetchItems = async () => {
-  const result = await axios.get(URL);
-  return result.data;
+const fetchItems = async ({queryKey}) => {
+    const [_, currentUser] = queryKey
+    if(currentUser){
+        console.log('current user', currentUser)
+        const { id: userId, userEmail, expiration } = currentUser;
+        const result = await axios.get(`${URL}${userId}`);
+        return result.data;
+
+    }
+  return null
 };
 
 
@@ -34,9 +45,7 @@ interface StyleCalculatorProps {
 }
 
 export default function StyleCalculator({currentUser}: StyleCalculatorProps) {
-console.log('currentUser', currentUser)
-//     const { userId, userEmail, expiration } = currentUser;
-  const { isLoading, error, data } = useQuery("style", fetchItems);
+  const { isLoading, error, data } = useQuery(["style", currentUser], fetchItems);
   const [selectedFabric, setSelectedFabric] = useState("");
   const [selectedQuantityRange, setSelectedQuantityRange] = useState("");
   const [selectedStyleCategory, setSelectedStyleCategory] = useState("");
@@ -56,7 +65,7 @@ console.log('currentUser', currentUser)
       }
       setSize("3 sizes (S, M, L)");
     }
-  }, [data]);
+  }, [data, currentUser]);
 
   const handleCalculate = () => {
     const calcData = {
@@ -65,8 +74,9 @@ console.log('currentUser', currentUser)
       style_category: selectedStyleCategory,
       size: size,
     };
+    console.log('csrg token', CSRF_TOKEN)
     axios
-      .post(URL, calcData, {
+      .post(`${URL}${currentUser.id}`, calcData, {
         headers: {
           "X-CSRFToken": CSRF_TOKEN,
         },
@@ -88,8 +98,11 @@ console.log('currentUser', currentUser)
       return selectedStyleType[0].label;
     }
   };
+  console.log('data', data)
   return (
+  <>{currentUser ? (
     <Stack alignItems="center" useFlexGap gap="40px" sx={{ marginTop: "35px" }}>
+
       {selectedStyleCategory && (
         <img
           style={{ width: "200px", height: "200px", border: "1px solid grey" }}
@@ -177,23 +190,13 @@ console.log('currentUser', currentUser)
       </Button>
       {
         cost && (
-          //       <Box
-          //       sx={{
-          //           width: 500,
-          //           border: "1px solid grey",
-          //           borderRadius: "10px",
-          //           padding: "10px",
-          //           "&:hover": {
-          //             border: "1px solid blue",
-          //           },
-          //       }}
-          //     >
+
           <Typography variant="h1" component="h2">
             {`$${cost}`}
           </Typography>
         )
-        //     </Box>
       }
-    </Stack>
+    </Stack>) : <p>Please <Link to="/app/login">log in</Link> to view this page.</p>}
+    </>
   );
 }

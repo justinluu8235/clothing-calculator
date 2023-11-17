@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import setAuthToken from './App/utils/setAuthToken'
 import { jwtDecode } from 'jwt-decode';
+import { Navigate } from "react-router-dom";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -25,6 +26,7 @@ interface LoginProps {
 export default function Login({nowCurrentUser}: LoginProps){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
   const handleSubmit = (e) => {
     const loginData = {
       email: email,
@@ -47,7 +49,8 @@ axios
         // decode token to get the user data
         const decoded = jwtDecode(token);
         nowCurrentUser(decoded)
-        return alert('Logged In');
+        alert('Logged In');
+        setLoggedIn(true)
       })
       .catch((err) => {
         console.log("error", err);
@@ -59,6 +62,9 @@ axios
 
   return (
     <Stack style={{ width: "300px", padding: "20px" }} spacing={2}>
+      {loggedIn && (
+        <Navigate to="/app" replace={true}/>
+      )}
       <TextField
         label="Email"
         variant="outlined"

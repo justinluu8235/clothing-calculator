@@ -50,14 +50,14 @@ const AppWithRouter = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
     useEffect(() => {
     let token;
-
+    console.log('token', localStorage.getItem('jwtToken'))
     if (!localStorage.getItem('jwtToken')) {
       setIsAuthenticated(false);
+
     } else {
       token = jwtDecode(localStorage.getItem('jwtToken'));
       setAuthToken(localStorage.getItem('jwtToken'));
       setCurrentUser(token);
-      console.log(token);
     }
   }, []);
 
@@ -89,15 +89,10 @@ const AppWithRouter = () => {
       // make a condition that compares exp and current time
   const expirationTime = new Date(exp * 1000);
   let currentTime = Date.now();
-  console.log('currentTime', currentTime)
-  console.log('expirationTime,', expirationTime)
   if (currentTime >= expirationTime.getTime()) {
     handleLogout();
-
   }
   }
-
-
 
   return (
     <React.StrictMode>
