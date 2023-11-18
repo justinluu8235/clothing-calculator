@@ -39,6 +39,11 @@ class StyleCategory(models.Model):
             client.delete_objects(f"static/style_category_pics/{pk}")
         super().save(*args, **kwargs)
 
+    def delete(self, *args, **kwargs):
+        client = S3Client()
+        client.delete_objects(f"static/style_category_pics/{self.pk}")
+        super().delete(*args, **kwargs)
+
 
 SIZE_SET_CHOICES = [('3 sizes (S, M, L)', '3 sizes (S, M, L)'), ('5 sizes (XS, S, M, L, XL)', '5 sizes (XS, S, M, L, XL)')]
 class StylePricePoint(models.Model):
@@ -58,20 +63,32 @@ class Style(models.Model):
     description = models.CharField(max_length=250, null=True, blank=True)
     notes = models.CharField(max_length=250, null=True, blank=True)
     washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
+    model_number = models.CharField(max_length=150, null=False)
+
+    def __str__(self):
+        return f"{self.model_number} - {self.name}"
 
 
 def style_image_upload_to(instance, filename):
     return f"style_pics/style_{instance.style.pk}/{instance.pk}/{filename}"
 class StyleImage(models.Model):
     style = models.ForeignKey(Style, on_delete=models.CASCADE, related_name="images")
-    image = models.FileField(blank=True, null=True, upload_to=style_category_image_upload_to)
+    image = models.FileField(blank=True, null=True, upload_to=style_image_upload_to)
 
     def save(self, *args, **kwargs):
         pk = getattr(self, 'pk', None)
         if pk:
             client = S3Client()
-            client.delete_objects(f"style_pics/style_{self.style.pk}/{self.pk}")
+            client.delete_objects(f"static/style_pics/style_{self.style.pk}/{self.pk}")
+        else:
+            next_pk = StyleImage.objects.order_by('-pk').first().pk + 1 if StyleImage.objects.exists() else 1
+            self.pk = next_pk
         super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        client = S3Client()
+        client.delete_objects(f"static/style_pics/style_{self.style.pk}/{self.pk}")
+        super().delete(*args, **kwargs)
 
 class UserStyle(models.Model):
     style = models.ForeignKey(Style, on_delete=models.CASCADE)

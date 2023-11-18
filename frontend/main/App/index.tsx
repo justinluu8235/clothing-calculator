@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { createBrowserRouter, RouterProvider, BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
 import StyleCalculator from '../StyleCalculator'
+import ShowRoom from '../ShowRoom'
 import Login from '../Login'
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
@@ -98,9 +99,12 @@ const AppWithRouter = () => {
     <QueryClientProvider client={queryClient}>
     <Router>
     <Routes>
-            <Route path="/app" element={<App currentUser={currentUser}/>}/>
+
+        <Route path="/app" element={<App currentUser={currentUser}/>}/>
+
         <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser}/>}/>
         <Route path="/app/about" element={<About/>}/>
+        <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
     </Routes>
 
     </Router>

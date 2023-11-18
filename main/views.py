@@ -1,9 +1,11 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
 from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory
-from .serializers import StyleCategorySerializer, QuantityRangeSerializer, FabricTypeSerializer, StylePricePointSerializer
+from .serializers import StyleCategorySerializer, QuantityRangeSerializer, FabricTypeSerializer, \
+    StylePricePointSerializer, UserStyleSerializer
 import json
 from .auth_helpers import validate_token
 def index(request):
@@ -54,3 +56,23 @@ class StyleCalculatorView(View):
             return JsonResponse({'estimated_cost': price_point.first().estimated_cost})
         else:
             return JsonResponse({'estimated_cost': 'N/A'})
+
+
+class ShowRoomView(View):
+    def get(self, request, user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+
+        user = User.objects.get(pk=user_id)
+        user_styles = user.styles.all()
+        styles_by_id = {}
+        user_styles_data = UserStyleSerializer(user_styles, many=True).data
+        for user_style_data in user_styles_data:
+            #TODO: confirm this works when no images
+            user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
+        return JsonResponse({'style_data': user_styles_data})
+
+
+
