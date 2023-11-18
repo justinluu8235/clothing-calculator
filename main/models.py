@@ -1,5 +1,8 @@
 from django.db import models
 
+from main.s3 import S3Client
+
+
 # Create your models here.
 
 class QuantityRange(models.Model):
@@ -19,12 +22,21 @@ class FabricType(models.Model):
         return self.fabric_name
 
 
+def style_category_image_upload_to(instance, filename):
+    return f"style_category_pics/{instance.pk}/{filename}"
 class StyleCategory(models.Model):
     style_category_name = models.CharField(max_length=100, null=False, unique=True)
-    image = models.FileField(blank=True, null=True, upload_to="style_category_pics/")
+    image = models.FileField(blank=True, null=True, upload_to=style_category_image_upload_to)
 
     def __str__(self):
         return self.style_category_name
+
+    def save(self, *args, **kwargs):
+        pk = getattr(self, 'pk', None)
+        if pk:
+            client = S3Client()
+            client.delete_objects(f"static/style_category_pics/{pk}")
+        super().save(*args, **kwargs)
 
 
 SIZE_SET_CHOICES = [('3 sizes (S, M, L)', '3 sizes (S, M, L)'), ('5 sizes (XS, S, M, L, XL)', '5 sizes (XS, S, M, L, XL)')]
@@ -40,3 +52,9 @@ class StylePricePoint(models.Model):
                 f"quantity: {self.quantity_range}, size: {self.size}, est_cost: {self.estimated_cost})")
 
 
+# class Style(models.Model):
+#     name = models.CharField(max_length=250, null=True, blank=True)
+#
+#
+# class StyleImage(models.Model):
+#     style = models.ForeignKey(Style, on_delete=models.CAS
