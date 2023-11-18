@@ -1,9 +1,11 @@
 from django.contrib import admin
 
-from .models import QuantityRange, FabricType, StyleCategory, StylePricePoint
+from .models import QuantityRange, FabricType, StyleCategory, StylePricePoint, Style, StyleImage
 
 admin.site.register(QuantityRange)
 admin.site.register(FabricType)
 admin.site.register(StyleCategory)
 admin.site.register(StylePricePoint)
+admin.site.register(Style)
+admin.site.register(StyleImage)
 

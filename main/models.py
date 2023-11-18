@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 from main.s3 import S3Client
@@ -71,3 +72,7 @@ class StyleImage(models.Model):
             client = S3Client()
             client.delete_objects(f"style_pics/style_{self.style.pk}/{self.pk}")
         super().save(*args, **kwargs)
+
+class UserStyle(models.Model):
+    style = models.ForeignKey(Style, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="styles")
