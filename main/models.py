@@ -52,9 +52,22 @@ class StylePricePoint(models.Model):
                 f"quantity: {self.quantity_range}, size: {self.size}, est_cost: {self.estimated_cost})")
 
 
-# class Style(models.Model):
-#     name = models.CharField(max_length=250, null=True, blank=True)
-#
-#
-# class StyleImage(models.Model):
-#     style = models.ForeignKey(Style, on_delete=models.CAS
+class Style(models.Model):
+    name = models.CharField(max_length=250, null=True, blank=True)
+    description = models.CharField(max_length=250, null=True, blank=True)
+    notes = models.CharField(max_length=250, null=True, blank=True)
+    washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
+
+
+def style_image_upload_to(instance, filename):
+    return f"style_pics/style_{instance.style.pk}/{instance.pk}/{filename}"
+class StyleImage(models.Model):
+    style = models.ForeignKey(Style, on_delete=models.CASCADE, related_name="images")
+    image = models.FileField(blank=True, null=True, upload_to=style_category_image_upload_to)
+
+    def save(self, *args, **kwargs):
+        pk = getattr(self, 'pk', None)
+        if pk:
+            client = S3Client()
+            client.delete_objects(f"style_pics/style_{self.style.pk}/{self.pk}")
+        super().save(*args, **kwargs)
