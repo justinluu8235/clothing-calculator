@@ -58,12 +58,20 @@ class StylePricePoint(models.Model):
                 f"quantity: {self.quantity_range}, size: {self.size}, est_cost: {self.estimated_cost})")
 
 
+class StyleSource(models.Model):
+    source_name = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return self.source_name
+
+
 class Style(models.Model):
     name = models.CharField(max_length=250, null=True, blank=True)
     description = models.CharField(max_length=250, null=True, blank=True)
     notes = models.CharField(max_length=250, null=True, blank=True)
     washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
     model_number = models.CharField(max_length=150, null=False)
+    source = models.ForeignKey(StyleSource, on_delete=models.DO_NOTHING, null=True, related_name="source")
 
     def __str__(self):
         return f"{self.model_number} - {self.name}"

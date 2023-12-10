@@ -102,7 +102,7 @@ const AppWithRouter = () => {
 
         <Route path="/app" element={<App currentUser={currentUser}/>}/>
 
-        <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser}/>}/>
+        <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser} handleLogout={handleLogout}/>}/>
         <Route path="/app/about" element={<About/>}/>
         <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
     </Routes>
