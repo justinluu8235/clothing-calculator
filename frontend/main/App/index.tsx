@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, BrowserRouter as Router, Route, Ro
 import StyleCalculator from '../StyleCalculator'
 import ShowRoom from '../ShowRoom'
 import Login from '../Login'
+import Navbar from '../Navbar'
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
 import { jwtDecode } from 'jwt-decode';
@@ -23,20 +24,13 @@ if (process.env.NODE_ENV === "development") {
 
 
 
-const About = () => {
-  return (
-    <div>
-      <h1>This is an about page</h1>
-    </div>
-  );
-};
 
 interface AppProps {
   currentUser: any
 }
 
-const App = ({currentUser}: AppProps) => {
 
+const App = ({currentUser}: AppProps) => {
   return (
     <div>
       <StyleCalculator currentUser={currentUser}/>
@@ -97,13 +91,13 @@ const AppWithRouter = () => {
   return (
     <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      
     <Router>
+    <Navbar currentUser={currentUser} handleLogout={handleLogout}/>
     <Routes>
-
+      
         <Route path="/app" element={<App currentUser={currentUser}/>}/>
-
         <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser} handleLogout={handleLogout}/>}/>
-        <Route path="/app/about" element={<About/>}/>
         <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
     </Routes>
 

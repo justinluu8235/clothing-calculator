@@ -1,5 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -67,40 +68,58 @@ export default function Login({ nowCurrentUser, handleLogout }: LoginProps) {
       .catch((err) => {
         console.log("error", err);
       });
-
-
-
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Stack style={{height: '100%'}} direction={"row"} justifyContent={"center"} alignItems={"center"}>
+      <Stack
+        style={{ marginTop: "80px" }}
+        direction={"column"}
+        justifyContent={"center"}
+        alignItems={"center"}
+      >
+        <Box
+          sx={{
+            backgroundColor: "cadetblue",
+            padding: "25px",
+            borderRadius: 2,
+          }}
+        >
+            <Typography variant="h2" component="h2" textAlign={'center'} fontFamily={'fantasy'}>
+              Veisais
+            </Typography>
+          <Stack style={{ width: "300px", padding: "20px" }} spacing={2}>
+            {loggedIn && <Navigate to="/app" replace={true} />}
 
-      
-      <Box sx={{ backgroundColor: "cadetblue", width:"400px"}}>
-        <Stack style={{ width: "300px", padding: "20px" }} spacing={2}>
-          {loggedIn && <Navigate to="/app" replace={true} />}
-          <TextField
-            label="Email"
-            variant="outlined"
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ backgroundColor: "white" }}
-          />
-          <TextField
-            label="Password"
-            variant="outlined"
-            onChange={(e) => setPassword(e.target.value)}
-            sx={{ backgroundColor: "white" }}
-          />
-          <Button style={{backgroundColor:'white', color:'blue'}} variant="outlined" onClick={handleSubmit}>
-            Login
-          </Button>
+            <TextField
+              label="Email"
+              variant="outlined"
+              onChange={(e) => setEmail(e.target.value)}
+              sx={{ backgroundColor: "white" }}
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ backgroundColor: "white" }}
+            />
+            <Button
+              style={{ backgroundColor: "white", color: "blue" }}
+              variant="outlined"
+              onClick={handleSubmit}
+            >
+              Login
+            </Button>
 
-          <Button style={{backgroundColor:'white', color:'blue'}} variant="outlined" onClick={handleLogout}>
-            Logout
-          </Button>
-        </Stack>
-      </Box>
+            <Button
+              style={{ backgroundColor: "white", color: "blue" }}
+              variant="outlined"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </Stack>
+        </Box>
       </Stack>
     </ThemeProvider>
   );

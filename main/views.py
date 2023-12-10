@@ -2,10 +2,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
-from django.http import HttpResponse, JsonResponse
-from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory
-from .serializers import StyleCategorySerializer, QuantityRangeSerializer, FabricTypeSerializer, \
-    StylePricePointSerializer, UserStyleSerializer
+from django.http import JsonResponse
+from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle
+from .serializers import StyleCategorySerializer, UserStyleSerializer
 import json
 from .auth_helpers import validate_token
 def index(request):
@@ -66,8 +65,11 @@ class ShowRoomView(View):
             return Response(data={"error": "access denied..who are you?"}, status=400)
 
         user = User.objects.get(pk=user_id)
-        user_styles = user.styles.all()
-        styles_by_id = {}
+        if user.is_superuser and user.is_staff:
+            user_styles = UserStyle.objects.order_by('style').distinct('style')
+        else:
+            user_styles = user.styles.all()
+
         user_styles_data = UserStyleSerializer(user_styles, many=True).data
         for user_style_data in user_styles_data:
             #TODO: confirm this works when no images
