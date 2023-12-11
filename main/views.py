@@ -3,8 +3,8 @@ from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from django.http import JsonResponse
-from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle
-from .serializers import StyleCategorySerializer, UserStyleSerializer
+from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style
+from .serializers import StyleCategorySerializer, UserStyleSerializer, StyleSerializer
 import json
 from .auth_helpers import validate_token
 def index(request):
@@ -64,17 +64,25 @@ class ShowRoomView(View):
         except Exception as e:
             return Response(data={"error": "access denied..who are you?"}, status=400)
 
+        style_results = []
         user = User.objects.get(pk=user_id)
         if user.is_superuser and user.is_staff:
-            user_styles = UserStyle.objects.order_by('style').distinct('style')
+            styles = Style.objects.all()
+            styles_data = StyleSerializer(styles, many=True).data
+            for style in styles_data:
+                style['current_image'] = 0 if style['images'] else -1
+                style_results.append(style)
+
         else:
             user_styles = user.styles.all()
+            user_styles_data = UserStyleSerializer(user_styles, many=True).data
 
-        user_styles_data = UserStyleSerializer(user_styles, many=True).data
-        for user_style_data in user_styles_data:
-            #TODO: confirm this works when no images
-            user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
-        return JsonResponse({'style_data': user_styles_data})
+            for user_style_data in user_styles_data:
+                user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
+                style_results.append(user_style_data['style'])
+
+
+        return JsonResponse({'style_data': style_results})
 
 
 

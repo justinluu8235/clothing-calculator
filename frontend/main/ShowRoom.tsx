@@ -68,13 +68,13 @@ export default function ShowRoom({ currentUser }: ShowRoomProps) {
       >
         <Stack direction={"row"} gap={"40px"} flexWrap={'wrap'}>
           {styles &&
-            styles.map((userStyle, i) => {
+            styles.map((style, i) => {
               // TODO: what if no image? maybe show no image icon
-              const numImages = userStyle.style.images.length;
-              const currentImageIndex = userStyle.style.current_image;
+              const numImages = style.images.length;
+              const currentImageIndex = style.current_image;
               const currentImage =
                 numImages > 0 ? 
-                userStyle.style.images[currentImageIndex].image : null
+                style.images[currentImageIndex].image : null
   
               const showRightIcon = currentImageIndex + 1 < numImages
               const showLeftIcon = currentImageIndex - 1 >= 0
@@ -90,9 +90,9 @@ export default function ShowRoom({ currentUser }: ShowRoomProps) {
                         <IconButton
                           aria-label="delete"
                           onClick={() => {
-                            let newUserStyleObj = { ...userStyle };
-                            newUserStyleObj.style.current_image += 1;
-                            updateStyleAtIndex(i, newUserStyleObj);
+                            let newStyleObj = { ...style };
+                            newStyleObj.current_image += 1;
+                            updateStyleAtIndex(i, newStyleObj);
                           }}
                           style={{backgroundColor:'whitesmoke'}}
                           sx={{position:'relative', top:'250px', left:'260px'}}
@@ -105,9 +105,9 @@ export default function ShowRoom({ currentUser }: ShowRoomProps) {
                        <IconButton
                          aria-label="delete"
                          onClick={() => {
-                           let newUserStyleObj = { ...userStyle };
-                           newUserStyleObj.style.current_image -= 1;
-                           updateStyleAtIndex(i, newUserStyleObj);
+                           let newStyleObj = { ...style };
+                           newStyleObj.current_image -= 1;
+                           updateStyleAtIndex(i, newStyleObj);
                          }}
                          style={{backgroundColor:'whitesmoke'}}
                          sx={{position:'relative', top:'250px', right: `${showRightIcon ? '40px':'0px'}`}}
@@ -121,10 +121,10 @@ export default function ShowRoom({ currentUser }: ShowRoomProps) {
   
                   <CardContent>
                     <Typography gutterBottom variant="subtitle2" component="div">
-                      model number: {userStyle.style.model_number}
+                      model number: {style.model_number}
                     </Typography>
                     <Typography gutterBottom variant="subtitle2" component="div">
-                      {userStyle.style.name}
+                      {style.name}
                     </Typography>
                   </CardContent>
                 </Card>
