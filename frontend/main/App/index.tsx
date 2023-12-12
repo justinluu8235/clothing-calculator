@@ -95,10 +95,18 @@ const AppWithRouter = () => {
     <Router>
     <Navbar currentUser={currentUser} handleLogout={handleLogout}/>
     <Routes>
+      {currentUser && (
+        <>
+                <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
+          <Route path="/app" element={<App currentUser={currentUser}/>}/>
+        </>
+
+
+      )}
       
-        <Route path="/app" element={<App currentUser={currentUser}/>}/>
+        
         <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser} handleLogout={handleLogout}/>}/>
-        <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
+        
     </Routes>
 
     </Router>

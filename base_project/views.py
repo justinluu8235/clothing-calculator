@@ -30,12 +30,15 @@ class LoginView(View):
                  'exp': datetime.utcnow() + timedelta(minutes=20)},
                 settings.SECRET_KEY, algorithm='HS256')
 
+
+
             user_info = {
                 'userData':
                     {
                         'username': user.username,
                         'email': user.email,
                         'id': user.id,
+
                     },
                 'token': 'Bearer ' + str(token),
                 'success': True
