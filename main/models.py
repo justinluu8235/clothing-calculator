@@ -116,9 +116,13 @@ class UserStyle(models.Model):
 class ClientCompany(models.Model):
     company_name = models.CharField(max_length=200, blank=False)
     address = models.CharField(max_length=200, blank=True)
+    city = models.CharField(max_length=200, blank=True)
+    state = models.CharField(max_length=200, blank=True)
+    zip_code = models.CharField(max_length=200, blank=True)
     main_contact_name = models.CharField(max_length=150, blank=False)
     email = models.CharField(max_length=150, blank=False)
     phone_number = models.CharField(max_length=50, blank=True)
+    website = models.CharField(max_length=150, blank=True)
     additional_information = models.CharField(max_length=500, blank=True)
 
 

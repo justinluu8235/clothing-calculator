@@ -5,6 +5,7 @@ import Stack from "@mui/material/Stack";
 import { Link } from "react-router-dom";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
+import Button from "@mui/material/Button";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import { IconButton } from "@mui/material";
@@ -14,7 +15,9 @@ import Fab from "@mui/material/Fab";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CheckIcon from "@mui/icons-material/Check";
 import { green } from "@mui/material/colors";
-import CircularProgress from '@mui/material/CircularProgress';
+import Modal from "@mui/material/Modal";
+import Box from '@mui/material/Box';
+import StyleRequestForm from "./StyleRequestForm";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -37,30 +40,47 @@ const fetchStyles = async ({ queryKey }) => {
   return null;
 };
 
+
 interface ShowRoomProps {
   currentUser: any;
-  isTradeShow?: boolean
+  isTradeShow?: boolean;
 }
 
-export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomProps) {
+export default function ShowRoom({
+  currentUser,
+  isTradeShow = false,
+}: ShowRoomProps) {
+
   const { isLoading, error, data } = useQuery(
     ["style", currentUser],
     fetchStyles
   );
+
   const [styles, setStyles] = useState(null);
-  const [success, setSuccess] = React.useState(false);
+  const [modalOpen, setModalOpen] = useState(false)
+
+  const modalStyle = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 800,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    height: '80%',
+    p: 4,
+    overflow:'scroll', 
+    '@media only screen and (max-width: 500px)':{
+      width: 300
+    },
+  };
 
   useEffect(() => {
     if (data) {
       setStyles(data["style_data"]);
     }
   }, [data, currentUser]);
-
-
-  const handleButtonClick = () => {
-
-      setSuccess(true);
-  };
 
   const updateStyleAtIndex = (index, styleObject) => {
     setStyles((prevStyles) => {
@@ -71,6 +91,14 @@ export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomPro
     });
   };
 
+  const getSelectedStyles = (styles: any) => {
+      if(styles){
+        return styles.filter(style => style.hasOwnProperty("added_cart") && !!style.added_cart)
+      }
+      return []
+      
+  }
+
   return (
     <>
       {currentUser ? (
@@ -79,11 +107,33 @@ export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomPro
           direction={"column"}
           justifyContent={"center"}
           alignItems={"center"}
+          gap="20px"
         >
-          <Stack direction={"row"} gap={"40px"} flexWrap={"wrap"}>
+          <Button
+            style={{
+              backgroundColor: "whitesmoke",
+              color: "cadetblue",
+              border: "2px solid cadetblue",
+            }}
+            variant="contained"
+            onClick={() => {setModalOpen(true)}}
+          >
+            Request a Quotation
+          </Button>
+          <Modal
+            open={modalOpen}
+            onClose={() => {setModalOpen(!modalOpen)}}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={modalStyle}>
+            <StyleRequestForm requested_styles={getSelectedStyles(styles)}/>
+            </Box>
+          </Modal>
+
+          <Stack direction={"row"} gap={"40px"} flexWrap={"wrap"} justifyContent={'center'}>
             {styles &&
               styles.map((style, i) => {
-                // TODO: what if no image? maybe show no image icon
                 const numImages = style.images.length;
                 const currentImageIndex = style.current_image;
                 const currentImage =
@@ -91,7 +141,8 @@ export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomPro
 
                 const showRightIcon = currentImageIndex + 1 < numImages;
                 const showLeftIcon = currentImageIndex - 1 >= 0;
-                const addedToCart = style.hasOwnProperty('added_cart') && !!style.added_cart
+                const addedToCart =
+                  style.hasOwnProperty("added_cart") && !!style.added_cart;
                 return (
                   <Card key={i}>
                     <CardMedia
@@ -139,7 +190,7 @@ export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomPro
                             aria-label="save"
                             color="primary"
                             style={{
-                              backgroundColor: 'cadetblue', 
+                              backgroundColor: "cadetblue",
                               ...(addedToCart && {
                                 backgroundColor: green[500],
                                 "&:hover": {
@@ -147,19 +198,29 @@ export default function ShowRoom({ currentUser, isTradeShow=false }: ShowRoomPro
                                 },
                               }),
                             }}
-                            sx={{position:'relative', left:`${showRightIcon && showLeftIcon? "160px" : "200px"}`}}
+                            sx={{
+                              position: "relative",
+                              left: `${
+                                showRightIcon && showLeftIcon
+                                  ? "160px"
+                                  : "200px"
+                              }`,
+                            }}
                             onClick={() => {
                               let newStyleObj = { ...style };
-                              if(addedToCart){
-                                newStyleObj.added_cart = false
-                              }
-                              else{
-                                newStyleObj.added_cart = true
+                              if (addedToCart) {
+                                newStyleObj.added_cart = false;
+                              } else {
+                                newStyleObj.added_cart = true;
                               }
                               updateStyleAtIndex(i, newStyleObj);
                             }}
                           >
-                            {addedToCart ? <CheckIcon /> : <AddShoppingCartIcon />}
+                            {addedToCart ? (
+                              <CheckIcon />
+                            ) : (
+                              <AddShoppingCartIcon />
+                            )}
                           </Fab>
                         </>
                       }
