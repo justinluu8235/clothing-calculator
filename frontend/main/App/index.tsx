@@ -98,6 +98,7 @@ const AppWithRouter = () => {
         <Route path="/app" element={<App currentUser={currentUser}/>}/>
         <Route path="/app/login" element={<Login nowCurrentUser={nowCurrentUser} handleLogout={handleLogout}/>}/>
         <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser}/>}/>
+        <Route path="/app/tradeshow" element={<ShowRoom currentUser={currentUser} isTradeShow={true}/>}/>
     </Routes>
 
     </Router>

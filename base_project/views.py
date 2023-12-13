@@ -38,7 +38,7 @@ class LoginView(View):
                         'username': user.username,
                         'email': user.email,
                         'id': user.id,
-
+                        'is_staff':user.is_staff,
                     },
                 'token': 'Bearer ' + str(token),
                 'success': True

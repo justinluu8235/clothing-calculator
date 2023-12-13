@@ -97,7 +97,13 @@ export default function ShowRoom({
         return styles.filter(style => style.hasOwnProperty("added_cart") && !!style.added_cart)
       }
       return []
-      
+  }
+
+  const unSelectAllStyles = () => {
+    const updatedStyles = styles.map((style) => {
+      return {...style, added_cart: false}
+    })
+    setStyles(updatedStyles)
   }
 
   return (
@@ -110,6 +116,7 @@ export default function ShowRoom({
           alignItems={"center"}
           gap="20px"
         >
+          <Stack direction={"row"}>
           <Button
             style={{
               backgroundColor: "whitesmoke",
@@ -121,6 +128,19 @@ export default function ShowRoom({
           >
             Request a Quotation
           </Button>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            style={{backgroundColor:'cadetblue', left: '30px'}}
+            sx={{ mr: 2 }}
+            onClick={unSelectAllStyles}
+          >
+            <CloseOutlined />
+          </IconButton>
+          
+          </Stack>
           <Modal
             open={modalOpen}
             onClose={() => {}}

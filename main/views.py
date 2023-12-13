@@ -121,7 +121,7 @@ class QuotationRequestView(View):
                 style_ids = [style['id'] for style in requested_styles]
                 styles = Style.objects.filter(pk__in=style_ids)
                 user = User.objects.get(pk=user_id)
-                quotation_request = QuotationRequest(user=user, request_notes=data.get('request_notes', ''))
+                quotation_request = QuotationRequest(user=user,company=client_company, request_notes=data.get('request_notes', ''))
                 quotation_request.save()
                 quotation_request.styles.set(styles)
                 quotation_request.save()
