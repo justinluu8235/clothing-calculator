@@ -18,6 +18,7 @@ import { green } from "@mui/material/colors";
 import Modal from "@mui/material/Modal";
 import Box from '@mui/material/Box';
 import StyleRequestForm from "./StyleRequestForm";
+import CloseOutlined from '@mui/icons-material/CloseOutlined';
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -68,7 +69,7 @@ export default function ShowRoom({
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
-    height: '80%',
+    maxHeight: '80%',
     p: 4,
     overflow:'scroll', 
     '@media only screen and (max-width: 500px)':{
@@ -122,12 +123,24 @@ export default function ShowRoom({
           </Button>
           <Modal
             open={modalOpen}
-            onClose={() => {setModalOpen(!modalOpen)}}
+            onClose={() => {}}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
             <Box sx={modalStyle}>
-            <StyleRequestForm requested_styles={getSelectedStyles(styles)}/>
+            <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            style={{backgroundColor:'cadetblue', bottom:'20px', opacity: '0.7'}}
+            sx={{ mr: 2 }}
+            onClick={() => setModalOpen(false)}
+          >
+            <CloseOutlined />
+          </IconButton>
+              
+            <StyleRequestForm requested_styles={getSelectedStyles(styles)} currentUser={currentUser}/>
             </Box>
           </Modal>
 

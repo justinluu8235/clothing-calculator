@@ -27,7 +27,7 @@ class LoginView(View):
             login(request, user)
             token = jwt.encode(
                 {'id': user.id, 'username': user.username, 'email': user.email, 'password': user.password,
-                 'exp': datetime.utcnow() + timedelta(minutes=20)},
+                 'exp': datetime.utcnow() + timedelta(hours=20)},
                 settings.SECRET_KEY, algorithm='HS256')
 
 

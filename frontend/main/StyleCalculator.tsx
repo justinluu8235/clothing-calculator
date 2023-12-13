@@ -22,10 +22,6 @@ if (process.env.NODE_ENV === "development") {
 }
 
 
-const csrfTokenInput = document.getElementsByName(
-"csrfmiddlewaretoken"
-)[0] as HTMLInputElement;
-const CSRF_TOKEN = csrfTokenInput.value;
 
 
 const URL = `${ENDPOINT}/app/style_calculator/`;

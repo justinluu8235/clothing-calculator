@@ -129,5 +129,6 @@ class ClientCompany(models.Model):
 class QuotationRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="quotation_requests")
+    company = models.ForeignKey(ClientCompany, on_delete=models.DO_NOTHING)
     styles = models.ManyToManyField(Style)
     request_notes = models.CharField(max_length=500, blank=True)

@@ -3,7 +3,8 @@ from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from django.http import JsonResponse
-from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style
+from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style, ClientCompany, \
+    QuotationRequest
 from .serializers import StyleCategorySerializer, UserStyleSerializer, StyleSerializer
 import json
 from .auth_helpers import validate_token
@@ -84,5 +85,48 @@ class ShowRoomView(View):
 
         return JsonResponse({'style_data': style_results})
 
+
+
+class QuotationRequestView(View):
+    def post(self, request, user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+        data = json.loads(request.body)
+        is_tradeshow = data.get('isTradeShow')
+        create_new_company_profile = is_tradeshow
+        try:
+            if create_new_company_profile:
+                client_company_data = {
+                    'company_name': data.get('company_name', ''),
+                    'address': data.get('address', ''),
+                    'city': data.get('city', ''),
+                    'state': data.get('state', ''),
+                    'zip_code': data.get('zip_code', ''),
+                    'main_contact_name': data.get('main_contact_name', ''),
+                    'email': data.get('email', ''),
+                    'phone_number': data.get('phone_number', ''),
+                    'website': data.get('website', ''),
+                    'additional_information': data.get('additional_information', ''),
+                }
+                client_company = ClientCompany(**client_company_data)
+                client_company.save()
+                if is_tradeshow:
+                    # normally if not a tradeshow, we would want to attach the company to the user
+                    pass
+            # create quotation request
+            requested_styles = data.get('requested_styles')
+            if requested_styles:
+                style_ids = [style['id'] for style in requested_styles]
+                styles = Style.objects.filter(pk__in=style_ids)
+                user = User.objects.get(pk=user_id)
+                quotation_request = QuotationRequest(user=user, request_notes=data.get('request_notes', ''))
+                quotation_request.save()
+                quotation_request.styles.set(styles)
+                quotation_request.save()
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+        return JsonResponse({'error': ''})
 
 
