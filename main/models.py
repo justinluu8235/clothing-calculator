@@ -111,3 +111,19 @@ class StyleImage(models.Model):
 class UserStyle(models.Model):
     style = models.ForeignKey(Style, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="styles")
+
+
+class ClientCompany(models.Model):
+    company_name = models.CharField(max_length=200, blank=False)
+    address = models.CharField(max_length=200, blank=True)
+    main_contact_name = models.CharField(max_length=150, blank=False)
+    email = models.CharField(max_length=150, blank=False)
+    phone_number = models.CharField(max_length=50, blank=True)
+    additional_information = models.CharField(max_length=500, blank=True)
+
+
+class QuotationRequest(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="quotation_requests")
+    styles = models.ManyToManyField(Style)
+    request_notes = models.CharField(max_length=500, blank=True)
