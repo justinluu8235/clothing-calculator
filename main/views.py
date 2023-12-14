@@ -58,7 +58,7 @@ class StyleCalculatorView(View):
             return JsonResponse({'estimated_cost': 'N/A'})
 
 
-class ShowRoomView(View):
+class UserStylesView(View):
     def get(self, request, user_id):
         try:
             validate_token(request.headers.get("Authorization"), user_id)
@@ -83,6 +83,22 @@ class ShowRoomView(View):
                 style_results.append(user_style_data['style'])
 
 
+        return JsonResponse({'style_data': style_results})
+
+
+class TradeshowStylesView(View):
+    def get(self, request, user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+        # right now this returns all styles, but in the future, maybe we can do a style.is_tradeshow
+        styles = Style.objects.all()
+        styles_data = StyleSerializer(styles, many=True).data
+        style_results = []
+        for style in styles_data:
+            style['current_image'] = 0 if style['images'] else -1
+            style_results.append(style)
         return JsonResponse({'style_data': style_results})
 
 

@@ -28,14 +28,20 @@ if (process.env.NODE_ENV === "development") {
     "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/";
 }
 
-const URL = `${ENDPOINT}/app/showroom/`;
+const URL = `${ENDPOINT}/app/`;
+
 const fetchStyles = async ({ queryKey }) => {
-  const [_, currentUser] = queryKey;
-  console.log("user", currentUser);
+  const [_, currentUser, isTradeShow] = queryKey;
+  let queryURL
   if (currentUser) {
     const { id: userId, userEmail, expiration } = currentUser;
-    const result = await axios.get(`${URL}${userId}`);
-    console.log("result", result.data);
+    if(isTradeShow){
+      queryURL = `${URL}tradeshow_styles/${userId}`
+    }
+    else{
+      queryURL = `${URL}user_styles/${userId}`
+    }
+    const result = await axios.get(queryURL);
     return result.data;
   }
   return null;
@@ -53,7 +59,7 @@ export default function ShowRoom({
 }: ShowRoomProps) {
 
   const { isLoading, error, data } = useQuery(
-    ["style", currentUser],
+    ["style", currentUser, isTradeShow],
     fetchStyles
   );
 
@@ -139,7 +145,7 @@ export default function ShowRoom({
           >
             <CloseOutlined />
           </IconButton>
-          
+
           </Stack>
           <Modal
             open={modalOpen}
