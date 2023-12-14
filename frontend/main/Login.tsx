@@ -89,7 +89,7 @@ export default function Login({ nowCurrentUser, handleLogout }: LoginProps) {
               Veisais
             </Typography>
           <Stack style={{ width: "300px", padding: "20px" }} spacing={2}>
-            {loggedIn && <Navigate to="/app/showroom" replace={true} />}
+            {loggedIn && <Navigate to="/app/selected_for_you" replace={true} />}
 
             <TextField
               label="Email"

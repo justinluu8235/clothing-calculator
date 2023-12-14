@@ -82,6 +82,7 @@ class Style(models.Model):
     fabric_source = models.ForeignKey(FabricSource, on_delete=models.DO_NOTHING, null=True, related_name="fabric_source")
     available_colors = models.CharField(max_length=250, blank=True)
     minimum_order_quantity = models.IntegerField(null=True)
+    is_showroom = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.model_number} - {self.name}"

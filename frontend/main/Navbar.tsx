@@ -49,7 +49,7 @@ export default function NavBar({ currentUser, handleLogout }: NavBarProps) {
           'aria-labelledby': 'basic-button',
         }}
       >
-        <MenuItem ><Link to="/app/showroom" reloadDocument={true}>Showroom</Link></MenuItem>
+        <MenuItem ><Link to="/app/selected_for_you" reloadDocument={true}>Selected For You</Link></MenuItem>
         {/* <MenuItem ><Link to="app/" reloadDocument={true}>Style Calculator</Link></MenuItem> */}
         <MenuItem ><Link to="app/tradeshow" reloadDocument={true}>Tradeshow</Link></MenuItem>
       </Menu>

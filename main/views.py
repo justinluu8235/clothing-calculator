@@ -3,11 +3,16 @@ from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from django.http import JsonResponse
+from .sendgrid import Sendgrid
+
+
 from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style, ClientCompany, \
     QuotationRequest
 from .serializers import StyleCategorySerializer, UserStyleSerializer, StyleSerializer
 import json
 from .auth_helpers import validate_token
+
+
 def index(request):
     return render(request, 'index.html')
 
@@ -133,14 +138,26 @@ class QuotationRequestView(View):
                     pass
             # create quotation request
             requested_styles = data.get('requested_styles')
+            user = User.objects.get(pk=user_id)
+            style_model_numbers = None
+            quotation_request = None
             if requested_styles:
                 style_ids = [style['id'] for style in requested_styles]
+                style_model_numbers = [style['model_number'] for style in requested_styles]
                 styles = Style.objects.filter(pk__in=style_ids)
-                user = User.objects.get(pk=user_id)
-                quotation_request = QuotationRequest(user=user,company=client_company, request_notes=data.get('request_notes', ''))
+                quotation_request = QuotationRequest(user=user,company=client_company, request_notes=data.get('quotation_request_notes', ''))
                 quotation_request.save()
                 quotation_request.styles.set(styles)
                 quotation_request.save()
+
+            # send email
+            sendgrid = Sendgrid()
+            sendgrid.set_from_veisais()
+            sendgrid.set_reply_to_veisais()
+            sendgrid.set_to_email_veisais()
+            sendgrid.set_subject(f"Quotation Request from {client_company.company_name}")
+            request_notes = quotation_request.request_notes if quotation_request else "N/A"
+            sendgrid.send_quotation_request(user, style_model_numbers, client_company, request_notes)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         return JsonResponse({'error': ''})
