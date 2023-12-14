@@ -125,6 +125,7 @@ class ClientCompany(models.Model):
     phone_number = models.CharField(max_length=50, blank=True)
     website = models.CharField(max_length=150, blank=True)
     additional_information = models.CharField(max_length=500, blank=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="company", null=True, blank=True)
 
 
 class QuotationRequest(models.Model):

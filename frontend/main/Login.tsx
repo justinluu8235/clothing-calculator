@@ -53,7 +53,6 @@ export default function Login({ nowCurrentUser, handleLogout }: LoginProps) {
         },
       })
       .then((response) => {
-        console.log("response", response);
         const { token, userData } = response.data;
         // save token to localStorage
         localStorage.setItem("jwtToken", token);

@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from .models import (QuantityRange, FabricType, StyleCategory,
-                     StylePricePoint, Style, StyleImage, UserStyle, StyleSource, FabricSource)
+                     StylePricePoint, Style, StyleImage, UserStyle, StyleSource, FabricSource,
+                     ClientCompany)
 
 
 
@@ -53,3 +54,4 @@ admin.site.register(Style, StyleAdmin)
 admin.site.register(UserStyle, UserStyleAdmin)
 admin.site.register(StyleSource)
 admin.site.register(FabricSource)
+admin.site.register(ClientCompany)

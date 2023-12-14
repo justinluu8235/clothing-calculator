@@ -114,7 +114,7 @@ export default function ShowRoom({
     });
     setStyles(updatedStyles);
   };
-
+  console.log('current user', currentUser)
   return (
     <>
       {currentUser ? (
@@ -127,12 +127,13 @@ export default function ShowRoom({
         >
           <Typography
             gutterBottom
-            variant="h2"
+            variant="h3"
             component="div"
             color="cadetblue"
             fontFamily={"fantasy"}
+            textAlign={"center"}
           >
-            {isShowRoom ? "Veisais Showroom" : isTradeShow ? "Collection" : "Selected For You"}
+            {isShowRoom ? "Veisais Showroom" : isTradeShow ? "Magic Show 2024 Feb: Kachii Fashion " : currentUser.company_name && currentUser.company_name.length < 40 ? `Selected For ${currentUser.company_name}`:"Selected For You"}
           </Typography>
           <Stack direction={"row"}>
             <Button

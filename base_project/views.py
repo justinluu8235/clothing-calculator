@@ -25,20 +25,22 @@ class LoginView(View):
             p = form.cleaned_data['password']
             user = authenticate(username=u, password = p)
             login(request, user)
+            company_name = user.company.first().company_name if user.company.exists() else ''
             token = jwt.encode(
                 {'id': user.id, 'username': user.username, 'email': user.email, 'password': user.password,
-                 'exp': datetime.utcnow() + timedelta(hours=20)},
+                 'exp': datetime.utcnow() + timedelta(hours=20), 'is_staff':user.is_staff, 'company_name': company_name
+                 },
                 settings.SECRET_KEY, algorithm='HS256')
-
-
-
+            # does this dict below even do anything..?
             user_info = {
                 'userData':
                     {
                         'username': user.username,
                         'email': user.email,
                         'id': user.id,
+
                         'is_staff':user.is_staff,
+                        'company_name': user.company.first().company_name if user.company.exists() else ''
                     },
                 'token': 'Bearer ' + str(token),
                 'success': True
