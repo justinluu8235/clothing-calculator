@@ -9,6 +9,7 @@ mysqlclient==2.1.1
 psycopg2-binary==2.9.5
 python-dotenv==0.21.0
 pytz==2022.7
+sendgrid==6.11.0
 sqlparse==0.4.3
 PyYAML==5.3.1
 PyJWT==2.3.0
