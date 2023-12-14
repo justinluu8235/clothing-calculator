@@ -16,9 +16,9 @@ import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CheckIcon from "@mui/icons-material/Check";
 import { green } from "@mui/material/colors";
 import Modal from "@mui/material/Modal";
-import Box from '@mui/material/Box';
+import Box from "@mui/material/Box";
 import StyleRequestForm from "./StyleRequestForm";
-import CloseOutlined from '@mui/icons-material/CloseOutlined';
+import CloseOutlined from "@mui/icons-material/CloseOutlined";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -31,15 +31,16 @@ if (process.env.NODE_ENV === "development") {
 const URL = `${ENDPOINT}/app/`;
 
 const fetchStyles = async ({ queryKey }) => {
-  const [_, currentUser, isTradeShow] = queryKey;
-  let queryURL
+  const [_, currentUser, isTradeShow, isShowRoom] = queryKey;
+  let queryURL;
   if (currentUser) {
     const { id: userId, userEmail, expiration } = currentUser;
-    if(isTradeShow){
-      queryURL = `${URL}tradeshow_styles/${userId}`
-    }
-    else{
-      queryURL = `${URL}user_styles/${userId}`
+    if (isTradeShow) {
+      queryURL = `${URL}tradeshow_styles/${userId}`;
+    } else if (isShowRoom) {
+      queryURL = `${URL}showroom_styles/${userId}`;
+    } else {
+      queryURL = `${URL}user_styles/${userId}`;
     }
     const result = await axios.get(queryURL);
     return result.data;
@@ -47,39 +48,39 @@ const fetchStyles = async ({ queryKey }) => {
   return null;
 };
 
-
 interface ShowRoomProps {
   currentUser: any;
   isTradeShow?: boolean;
+  isShowRoom?: boolean;
 }
 
 export default function ShowRoom({
   currentUser,
   isTradeShow = false,
+  isShowRoom = false,
 }: ShowRoomProps) {
-
   const { isLoading, error, data } = useQuery(
-    ["style", currentUser, isTradeShow],
+    ["style", currentUser, isTradeShow, isShowRoom],
     fetchStyles
   );
 
   const [styles, setStyles] = useState(null);
-  const [modalOpen, setModalOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false);
 
   const modalStyle = {
-    position: 'absolute' as 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
+    position: "absolute" as "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
     width: 800,
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
+    bgcolor: "background.paper",
+    border: "2px solid #000",
     boxShadow: 24,
-    maxHeight: '80%',
+    maxHeight: "80%",
     p: 4,
-    overflow:'scroll', 
-    '@media only screen and (max-width: 500px)':{
-      width: 300
+    overflow: "scroll",
+    "@media only screen and (max-width: 500px)": {
+      width: 300,
     },
   };
 
@@ -99,18 +100,20 @@ export default function ShowRoom({
   };
 
   const getSelectedStyles = (styles: any) => {
-      if(styles){
-        return styles.filter(style => style.hasOwnProperty("added_cart") && !!style.added_cart)
-      }
-      return []
-  }
+    if (styles) {
+      return styles.filter(
+        (style) => style.hasOwnProperty("added_cart") && !!style.added_cart
+      );
+    }
+    return [];
+  };
 
   const unSelectAllStyles = () => {
     const updatedStyles = styles.map((style) => {
-      return {...style, added_cart: false}
-    })
-    setStyles(updatedStyles)
-  }
+      return { ...style, added_cart: false };
+    });
+    setStyles(updatedStyles);
+  };
 
   return (
     <>
@@ -122,30 +125,40 @@ export default function ShowRoom({
           alignItems={"center"}
           gap="20px"
         >
+          <Typography
+            gutterBottom
+            variant="h2"
+            component="div"
+            color="cadetblue"
+            fontFamily={"fantasy"}
+          >
+            {isShowRoom ? "Veisais Showroom" : isTradeShow ? "Collection" : "Selected For You"}
+          </Typography>
           <Stack direction={"row"}>
-          <Button
-            style={{
-              backgroundColor: "whitesmoke",
-              color: "cadetblue",
-              border: "2px solid cadetblue",
-            }}
-            variant="contained"
-            onClick={() => {setModalOpen(true)}}
-          >
-            Request a Quotation
-          </Button>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            style={{backgroundColor:'cadetblue', left: '30px'}}
-            sx={{ mr: 2 }}
-            onClick={unSelectAllStyles}
-          >
-            <CloseOutlined />
-          </IconButton>
-
+            <Button
+              style={{
+                backgroundColor: "whitesmoke",
+                color: "cadetblue",
+                border: "2px solid cadetblue",
+              }}
+              variant="contained"
+              onClick={() => {
+                setModalOpen(true);
+              }}
+            >
+              Request a Quotation
+            </Button>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              style={{ backgroundColor: "cadetblue", left: "30px" }}
+              sx={{ mr: 2 }}
+              onClick={unSelectAllStyles}
+            >
+              <CloseOutlined />
+            </IconButton>
           </Stack>
           <Modal
             open={modalOpen}
@@ -154,23 +167,35 @@ export default function ShowRoom({
             aria-describedby="modal-modal-description"
           >
             <Box sx={modalStyle}>
-            <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            style={{backgroundColor:'cadetblue', bottom:'20px', opacity: '0.7'}}
-            sx={{ mr: 2 }}
-            onClick={() => setModalOpen(false)}
-          >
-            <CloseOutlined />
-          </IconButton>
-              
-            <StyleRequestForm requested_styles={getSelectedStyles(styles)} currentUser={currentUser}/>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                style={{
+                  backgroundColor: "cadetblue",
+                  bottom: "20px",
+                  opacity: "0.7",
+                }}
+                sx={{ mr: 2 }}
+                onClick={() => setModalOpen(false)}
+              >
+                <CloseOutlined />
+              </IconButton>
+
+              <StyleRequestForm
+                requested_styles={getSelectedStyles(styles)}
+                currentUser={currentUser}
+              />
             </Box>
           </Modal>
 
-          <Stack direction={"row"} gap={"40px"} flexWrap={"wrap"} justifyContent={'center'}>
+          <Stack
+            direction={"row"}
+            gap={"40px"}
+            flexWrap={"wrap"}
+            justifyContent={"center"}
+          >
             {styles &&
               styles.map((style, i) => {
                 const numImages = style.images.length;

@@ -77,11 +77,11 @@ class Style(models.Model):
     internal_notes = models.CharField(max_length=250, null=True, blank=True)
     washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
     model_number = models.CharField(max_length=150, null=False)
-    source = models.ForeignKey(StyleSource, on_delete=models.DO_NOTHING, null=True, related_name="source")
+    source = models.ForeignKey(StyleSource, on_delete=models.DO_NOTHING, null=True, blank=True,related_name="source")
     fabric_composition = models.CharField(max_length=250, blank=True)
-    fabric_source = models.ForeignKey(FabricSource, on_delete=models.DO_NOTHING, null=True, related_name="fabric_source")
+    fabric_source = models.ForeignKey(FabricSource, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="fabric_source")
     available_colors = models.CharField(max_length=250, blank=True)
-    minimum_order_quantity = models.IntegerField(null=True)
+    minimum_order_quantity = models.IntegerField(null=True, blank=True)
     is_showroom = models.BooleanField(default=False)
 
     def __str__(self):

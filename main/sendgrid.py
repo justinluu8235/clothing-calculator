@@ -8,6 +8,7 @@ from main.models import ClientCompany
 
 
 class Sendgrid:
+    #https://docs.sendgrid.com/api-reference/mail-send/mail-send
     def __init__(self):
         self.message = Mail()
 

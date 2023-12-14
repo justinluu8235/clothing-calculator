@@ -73,20 +73,19 @@ class UserStylesView(View):
         style_results = []
         user = User.objects.get(pk=user_id)
         if user.is_superuser and user.is_staff:
-            styles = Style.objects.all()
+            styles = Style.objects.filter(is_showroom=False)
             styles_data = StyleSerializer(styles, many=True).data
             for style in styles_data:
                 style['current_image'] = 0 if style['images'] else -1
                 style_results.append(style)
 
         else:
-            user_styles = user.styles.all()
+            user_styles = user.styles.filter(style__is_showroom=False)
             user_styles_data = UserStyleSerializer(user_styles, many=True).data
 
             for user_style_data in user_styles_data:
                 user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
                 style_results.append(user_style_data['style'])
-
 
         return JsonResponse({'style_data': style_results})
 
@@ -99,6 +98,20 @@ class TradeshowStylesView(View):
             return Response(data={"error": "access denied..who are you?"}, status=400)
         # right now this returns all styles, but in the future, maybe we can do a style.is_tradeshow
         styles = Style.objects.all()
+        styles_data = StyleSerializer(styles, many=True).data
+        style_results = []
+        for style in styles_data:
+            style['current_image'] = 0 if style['images'] else -1
+            style_results.append(style)
+        return JsonResponse({'style_data': style_results})
+
+class ShowroomStylesView(View):
+    def get(self, request, user_id):
+        try:
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+        styles = Style.objects.filter(is_showroom=True)
         styles_data = StyleSerializer(styles, many=True).data
         style_results = []
         for style in styles_data:
