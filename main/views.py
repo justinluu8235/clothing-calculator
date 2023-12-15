@@ -180,11 +180,10 @@ class StylesAdminView(View):
                 UserStyle.objects.create(style=style, user=target_user)
         elif data.get('action') == "remove_styles_from_user":
             selected_styles = data.get("selected_styles")
-            existing_style_ids = [user_style.style.id for user_style in user_styles]
             selected_style_ids = [style['id'] for style in selected_styles]
-            style_ids_to_delete = set(existing_style_ids) - set(selected_style_ids)
+            style_ids_to_delete = set(selected_style_ids)
             for style_id in style_ids_to_delete:
-                UserStyle.objects.get(user=target_user, style_id=style_id).delete()
+                UserStyle.objects.filter(user=target_user, style_id=style_id).delete()
         return JsonResponse({'user_styles': style_results})
 
 

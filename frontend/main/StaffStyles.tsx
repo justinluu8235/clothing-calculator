@@ -53,7 +53,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
   const { isLoading, error, data} = useQuery(
     ["style", currentUser],
     fetchStyles, 
-    {refetchOnMount: false}
+    {refetchOnMount: false, refetchOnWindowFocus: false}
   );
 
   const [styles, setStyles] = useState(null);
@@ -104,6 +104,9 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
     )
     .then((response) => {
       console.log("response", response);
+      if(operation == "remove"){
+        handleFilterByUser()
+      }
 
     })
     .catch((err) => {

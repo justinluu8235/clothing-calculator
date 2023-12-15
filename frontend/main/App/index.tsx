@@ -47,17 +47,17 @@ const AppWithRouter = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
 
-  // useEffect(() => {
-  //   let token;
-  //   console.log("token", localStorage.getItem("jwtToken"));
-  //   if (!localStorage.getItem("jwtToken")) {
-  //     setIsAuthenticated(false);
-  //   } else {
-  //     token = jwtDecode(localStorage.getItem("jwtToken"));
-  //     setAuthToken(localStorage.getItem("jwtToken"));
-  //     setCurrentUser(token);
-  //   }
-  // }, [isAuthenticated]);
+  useEffect(() => {
+    let token;
+    console.log("token", localStorage.getItem("jwtToken"));
+    if (!localStorage.getItem("jwtToken")) {
+      setIsAuthenticated(false);
+    } else {
+      token = jwtDecode(localStorage.getItem("jwtToken"));
+      setAuthToken(localStorage.getItem("jwtToken"));
+      setCurrentUser(token);
+    }
+  }, [isAuthenticated]);
 
 
   const nowCurrentUser = (userData) => {

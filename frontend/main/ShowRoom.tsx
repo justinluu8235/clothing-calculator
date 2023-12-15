@@ -62,7 +62,7 @@ export default function ShowRoom({
   const { isLoading, error, data } = useQuery(
     ["style", currentUser, isTradeShow, isShowRoom],
     fetchStyles,
-{refetchOnMount: false}
+    {refetchOnMount: false, refetchOnWindowFocus: false}
   );
 
   const [styles, setStyles] = useState(null);

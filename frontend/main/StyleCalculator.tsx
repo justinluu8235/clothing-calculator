@@ -43,7 +43,7 @@ interface StyleCalculatorProps {
 }
 
 export default function StyleCalculator({currentUser}: StyleCalculatorProps) {
-  const { isLoading, error, data } = useQuery(["style", currentUser], fetchItems, {refetchOnMount: false}
+  const { isLoading, error, data } = useQuery(["style", currentUser], fetchItems,  {refetchOnMount: false, refetchOnWindowFocus: false}
   );
   const [selectedFabric, setSelectedFabric] = useState("");
   const [selectedQuantityRange, setSelectedQuantityRange] = useState("");
