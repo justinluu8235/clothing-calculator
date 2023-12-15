@@ -8,7 +8,7 @@ from .sendgrid import Sendgrid
 
 from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style, ClientCompany, \
     QuotationRequest
-from .serializers import StyleCategorySerializer, UserStyleSerializer, StyleSerializer
+from .serializers import StyleCategorySerializer, UserStyleSerializer, StyleSerializer, ClientCompanySerializer
 import json
 from .auth_helpers import validate_token
 
@@ -72,22 +72,23 @@ class UserStylesView(View):
 
         style_results = []
         user = User.objects.get(pk=user_id)
-        if user.is_superuser and user.is_staff:
-            styles = Style.objects.filter(is_showroom=False)
-            styles_data = StyleSerializer(styles, many=True).data
-            for style in styles_data:
-                style['current_image'] = 0 if style['images'] else -1
-                style_results.append(style)
+        companies = ClientCompany.objects.filter(user=user)
+        company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
 
-        else:
-            user_styles = user.styles.filter(style__is_showroom=False)
-            user_styles_data = UserStyleSerializer(user_styles, many=True).data
+        # if user.is_superuser and user.is_staff:
+        #     styles = Style.objects.filter(is_showroom=False)
+        #     styles_data = StyleSerializer(styles, many=True).data
+        #     for style in styles_data:
+        #         style['current_image'] = 0 if style['images'] else -1
+        #         style_results.append(style)
+        user_styles = user.styles.filter(style__is_showroom=False)
+        user_styles_data = UserStyleSerializer(user_styles, many=True).data
 
-            for user_style_data in user_styles_data:
-                user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
-                style_results.append(user_style_data['style'])
+        for user_style_data in user_styles_data:
+            user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
+            style_results.append(user_style_data['style'])
 
-        return JsonResponse({'style_data': style_results})
+        return JsonResponse({'style_data': style_results, 'company_info': company_data})
 
 
 class TradeshowStylesView(View):
@@ -96,6 +97,10 @@ class TradeshowStylesView(View):
             validate_token(request.headers.get("Authorization"), user_id)
         except Exception as e:
             return Response(data={"error": "access denied..who are you?"}, status=400)
+        user = User.objects.get(pk=user_id)
+        companies = ClientCompany.objects.filter(user=user)
+        company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
+
         # right now this returns all styles, but in the future, maybe we can do a style.is_tradeshow
         styles = Style.objects.all()
         styles_data = StyleSerializer(styles, many=True).data
@@ -103,7 +108,7 @@ class TradeshowStylesView(View):
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
             style_results.append(style)
-        return JsonResponse({'style_data': style_results})
+        return JsonResponse({'style_data': style_results, 'company_info': company_data})
 
 class ShowroomStylesView(View):
     def get(self, request, user_id):
@@ -111,13 +116,19 @@ class ShowroomStylesView(View):
             validate_token(request.headers.get("Authorization"), user_id)
         except Exception as e:
             return Response(data={"error": "access denied..who are you?"}, status=400)
+
+        user = User.objects.get(pk=user_id)
+        companies = ClientCompany.objects.filter(user=user)
+        company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
+
+
         styles = Style.objects.filter(is_showroom=True)
         styles_data = StyleSerializer(styles, many=True).data
         style_results = []
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
             style_results.append(style)
-        return JsonResponse({'style_data': style_results})
+        return JsonResponse({'style_data': style_results, 'company_info': company_data})
 
 
 class StylesAdminView(View):
@@ -196,30 +207,40 @@ class QuotationRequestView(View):
         except Exception as e:
             return Response(data={"error": "access denied..who are you?"}, status=400)
         data = json.loads(request.body)
+        user = User.objects.get(pk=user_id)
         is_tradeshow = data.get('isTradeShow')
-        create_new_company_profile = is_tradeshow
+        user_companies = ClientCompany.objects.filter(user=user)
+        # if the user doesnt have a company or its a tradeshow, then we want to create one
+        create_new_company_profile = is_tradeshow or not user_companies.exists()
         try:
+            client_company_data = {
+                'company_name': data.get('company_name', ''),
+                'address': data.get('address', ''),
+                'city': data.get('city', ''),
+                'state': data.get('state', ''),
+                'zip_code': data.get('zip_code', ''),
+                'main_contact_name': data.get('main_contact_name', ''),
+                'email': data.get('email', ''),
+                'phone_number': data.get('phone_number', ''),
+                'website': data.get('website', ''),
+                'additional_information': data.get('additional_information', ''),
+            }
             if create_new_company_profile:
-                client_company_data = {
-                    'company_name': data.get('company_name', ''),
-                    'address': data.get('address', ''),
-                    'city': data.get('city', ''),
-                    'state': data.get('state', ''),
-                    'zip_code': data.get('zip_code', ''),
-                    'main_contact_name': data.get('main_contact_name', ''),
-                    'email': data.get('email', ''),
-                    'phone_number': data.get('phone_number', ''),
-                    'website': data.get('website', ''),
-                    'additional_information': data.get('additional_information', ''),
-                }
                 client_company = ClientCompany(**client_company_data)
-                client_company.save()
-                if is_tradeshow:
-                    # normally if not a tradeshow, we would want to attach the company to the user
+                if not is_tradeshow:
+                    #  if not a tradeshow, we would want to attach the company to the user
+                    client_company.user = user
                     pass
+                client_company.save()
+            else:
+                # update company information
+                client_company = user_companies.first()
+                for field, value in client_company_data.items():
+                    setattr(client_company, field, value)
+                client_company.save()
+
             # create quotation request
             requested_styles = data.get('requested_styles')
-            user = User.objects.get(pk=user_id)
             style_model_numbers = None
             quotation_request = None
             if requested_styles:

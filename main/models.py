@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-
 from main.s3 import S3Client
 
 
@@ -78,9 +77,9 @@ class Style(models.Model):
     washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
     model_number = models.CharField(max_length=150, null=False)
     fabric_model_number = models.CharField(max_length=150, null=True, blank=True)
-    source = models.ForeignKey(StyleSource, on_delete=models.DO_NOTHING, null=True, blank=True,related_name="source")
+    source = models.ForeignKey(StyleSource, on_delete=models.SET_NULL, null=True, blank=True,related_name="source")
     fabric_composition = models.CharField(max_length=250, blank=True)
-    fabric_source = models.ForeignKey(FabricSource, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="fabric_source")
+    fabric_source = models.ForeignKey(FabricSource, on_delete=models.SET_NULL, null=True, blank=True, related_name="fabric_source")
     available_colors = models.CharField(max_length=250, blank=True)
     minimum_order_quantity = models.IntegerField(null=True, blank=True)
     is_showroom = models.BooleanField(default=False)
@@ -126,12 +125,20 @@ class ClientCompany(models.Model):
     phone_number = models.CharField(max_length=50, blank=True)
     website = models.CharField(max_length=150, blank=True)
     additional_information = models.CharField(max_length=500, blank=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="company", null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="company", null=True, blank=True)
+
+    def __str__(self):
+        return self.company_name
+
 
 
 class QuotationRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="quotation_requests")
-    company = models.ForeignKey(ClientCompany, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True, related_name="quotation_requests")
+    company = models.ForeignKey(ClientCompany, on_delete=models.SET_NULL,  blank=True, null=True, )
     styles = models.ManyToManyField(Style)
     request_notes = models.CharField(max_length=500, blank=True)
+
+
+
+

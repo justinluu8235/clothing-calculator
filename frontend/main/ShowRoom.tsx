@@ -59,7 +59,7 @@ export default function ShowRoom({
   isTradeShow = false,
   isShowRoom = false,
 }: ShowRoomProps) {
-  const { isLoading, error, data } = useQuery(
+  const { isLoading, error, data, refetch} = useQuery(
     ["style", currentUser, isTradeShow, isShowRoom],
     fetchStyles,
     {refetchOnMount: false, refetchOnWindowFocus: false}
@@ -67,6 +67,7 @@ export default function ShowRoom({
 
   const [styles, setStyles] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [company, setCompany] = useState(null)
 
   const modalStyle = {
     position: "absolute" as "absolute",
@@ -88,6 +89,7 @@ export default function ShowRoom({
   useEffect(() => {
     if (data) {
       setStyles(data["style_data"]);
+      setCompany(data['company_info'])
     }
   }, [data, currentUser]);
 
@@ -179,7 +181,10 @@ export default function ShowRoom({
                   opacity: "0.7",
                 }}
                 sx={{ mr: 2 }}
-                onClick={() => setModalOpen(false)}
+                onClick={() => {
+                  setModalOpen(false)
+                  refetch()
+                }}
               >
                 <CloseOutlined />
               </IconButton>
@@ -187,6 +192,8 @@ export default function ShowRoom({
               <StyleRequestForm
                 requested_styles={getSelectedStyles(styles)}
                 currentUser={currentUser}
+                isTradeShow={isTradeShow}
+                company={company}
               />
             </Box>
           </Modal>

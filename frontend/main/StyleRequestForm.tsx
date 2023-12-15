@@ -15,6 +15,8 @@ import getCookie from "./App/utils/getCookie";
 interface ShowRoomProps {
   requested_styles: any;
   currentUser: any;
+  isTradeShow?: boolean;
+  company: any;
 }
 
 let ENDPOINT = "";
@@ -25,21 +27,22 @@ if (process.env.NODE_ENV === "development") {
     "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com/";
 }
 
-export default function StyleRequestForm({ requested_styles, currentUser }) {
+export default function StyleRequestForm({ requested_styles, currentUser, isTradeShow = false, company = {}}) {
   const [formError, setFormError] = useState(null);
   const [formSuccess, setFormSuccess] = useState(false);
-  console.log("requested_styles", requested_styles);
+
   const initialValues = {
-    company_name: "",
-    address: "",
-    city: "",
-    state: "",
-    zip_code: "",
-    main_contact_name: "",
-    email: "",
-    phone_number: "",
-    website: "",
-    additional_information: "",
+    // empty form if tradeshow, or if no company 
+    company_name: isTradeShow ||  !("company_name" in company) ? '': company?.company_name, 
+    address: isTradeShow ||  !("address" in company) ? '': company?.address, 
+    city: isTradeShow ||  !("city" in company) ? '': company?.city, 
+    state: isTradeShow ||  !("state" in company) ? '': company?.state, 
+    zip_code: isTradeShow ||  !("zip_code" in company) ? '': company?.zip_code, 
+    main_contact_name: isTradeShow ||  !("main_contact_name" in company) ? '': company?.main_contact_name, 
+    email: isTradeShow ||  !("email" in company) ? '': company?.email, 
+    phone_number: isTradeShow ||  !("phone_number" in company) ? '': company?.phone_number, 
+    website: isTradeShow ||  !("website" in company) ? '': company?.website, 
+    additional_information: isTradeShow ||  !("additional_information" in company) ? '': company?.additional_information, 
     quotation_request_notes: "",
     requested_styles: requested_styles,
   };
@@ -114,7 +117,7 @@ export default function StyleRequestForm({ requested_styles, currentUser }) {
                 "main_contact_name",
                 "email",
               ];
-              if (!values["email"].includes("@")) {
+              if (typeof(values["email"]) == 'string' && !values["email"].includes("@")) {
                 errors["email"] = "Invalid Email";
               }
               for (const requiredField of requiredFields) {
@@ -129,7 +132,7 @@ export default function StyleRequestForm({ requested_styles, currentUser }) {
               axios
                 .post(
                   `${URL}${currentUser.id}`,
-                  { ...values, isTradeShow: true },
+                  { ...values, isTradeShow: isTradeShow },
                   {
                     headers: {
                       "X-CSRFToken": getCookie("csrftoken"),
@@ -169,7 +172,7 @@ export default function StyleRequestForm({ requested_styles, currentUser }) {
                     onBlur={handleBlur}
                     error={touched.company_name && Boolean(errors.company_name)}
                     helperText={touched.company_name && errors.company_name}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || initialValues.company_name != ""}
                   />
                   <TextField
                     sx={{ width: "300px" }}

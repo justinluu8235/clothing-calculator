@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import (QuantityRange, FabricType, StyleCategory,
-                     StylePricePoint, Style, StyleImage, UserStyle, StyleSource, FabricSource,
-                     ClientCompany)
+from .models import (Style, StyleImage, UserStyle, StyleSource, FabricSource,
+                     ClientCompany, QuotationRequest)
 
 
 
@@ -45,13 +45,23 @@ class StyleAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" width="50" height="50" />'.format(first_image.image.url))
         return '-'
 
+class CustomUserAdmin(UserAdmin):
+    list_display = ('username', 'email', 'company')
 
-admin.site.register(QuantityRange)
-admin.site.register(FabricType)
-admin.site.register(StyleCategory)
-admin.site.register(StylePricePoint)
+    def company(self, obj):
+        company = ClientCompany.objects.filter(user=obj)
+        if company.exists():
+            return company.first().company_name
+        else:
+            return "N/A"
+
+
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UserStyle, UserStyleAdmin)
 admin.site.register(StyleSource)
 admin.site.register(FabricSource)
 admin.site.register(ClientCompany)
+admin.site.register(QuotationRequest)
