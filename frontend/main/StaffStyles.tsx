@@ -8,7 +8,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { IconButton } from "@mui/material";
+import { IconButton, MenuItem, Select } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Fab from "@mui/material/Fab";
@@ -39,6 +39,7 @@ const fetchStyles = async ({ queryKey }) => {
     const { id: userId, userEmail, expiration } = currentUser;
     queryURL = `${URL}styles_admin/${userId}`;
     const result = await axios.get(queryURL);
+    console.log('res', result)
     return result.data;
   }
   return null;
@@ -48,17 +49,19 @@ interface StaffStylesProps {
   currentUser: any;
 }
 
-export default function StaffStyles({
-  currentUser,
-}: StaffStylesProps) {
-  const { isLoading, error, data } = useQuery(
+export default function StaffStyles({ currentUser }: StaffStylesProps) {
+  const { isLoading, error, data} = useQuery(
     ["style", currentUser],
-    fetchStyles
+    fetchStyles, 
+    {refetchOnMount: false}
   );
 
   const [styles, setStyles] = useState(null);
+  const [users, setUsers] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [userIdFilter, setUserIdFilter] = useState("0");
+  const [filteredStyles, setFilteredStyles] = useState(null);
+ console.log('gi')
   const modalStyle = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -79,11 +82,74 @@ export default function StaffStyles({
   useEffect(() => {
     if (data) {
       setStyles(data["style_data"]);
+      setFilteredStyles(data["style_data"]);
+      setUsers(data["user_info_list"]);
     }
   }, [data, currentUser]);
 
+  const addRemoveStylesToUser = (operation) => {
+    const userStyleURL = `${URL}styles_admin/${currentUser.id}`;
+    axios
+    .post(
+        userStyleURL,
+      { 
+        action: operation == 'add' ? 'add_styles_to_user' : 'remove_styles_from_user', 
+        target_user_id: userIdFilter, 
+        selected_styles: getSelectedStyles(filteredStyles)},
+      {
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+      }
+    )
+    .then((response) => {
+      console.log("response", response);
+
+    })
+    .catch((err) => {
+      console.log("error", err);
+    });
+  }
+  const handleFilterByUser = async () => {
+    const userStyleURL = `${URL}styles_admin/${currentUser.id}`;
+    const result = await 
+    axios
+    .post(
+        userStyleURL,
+      { action: 'fetch_user_styles', target_user_id: userIdFilter },
+      {
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+      }
+    )
+    .then((response) => {
+      console.log("response", response);
+      const userStylesData = response.data['user_styles']
+      const filteredUserStyles = []
+      for (const userStyle of userStylesData){
+          const styleId = userStyle['id'] 
+          //find the style
+          for(const [index, style] of styles.entries()){
+              if (style && styleId == style['id']){
+                  filteredUserStyles.push({...style})
+              }
+          }
+  
+      }
+      setFilteredStyles(filteredUserStyles)
+
+    })
+    .catch((err) => {
+      console.log("error", err);
+    });
+
+
+
+  }
+
   const updateStyleAtIndex = (index, styleObject) => {
-    setStyles((prevStyles) => {
+    setFilteredStyles((prevStyles) => {
       // Create a new array with the updated object at the specified index
       return prevStyles.map((item, i) =>
         i === index ? { ...item, ...styleObject } : item
@@ -106,10 +172,9 @@ export default function StaffStyles({
     });
     setStyles(updatedStyles);
   };
-  console.log('current user', currentUser)
   return (
     <>
-      {currentUser && currentUser.is_staff? (
+      {currentUser && currentUser.is_staff ? (
         <Stack
           style={{ marginTop: "120px" }}
           direction={"column"}
@@ -125,9 +190,82 @@ export default function StaffStyles({
             fontFamily={"fantasy"}
             textAlign={"center"}
           >
-            Admin View 
+            Admin View
           </Typography>
-          <Stack direction={"row"}>
+          {users && (
+            <Select
+              labelId="demo-simple-select-standard-label"
+              id="demo-simple-select-standard"
+              value={userIdFilter}
+              onChange={async (val) => {
+                setUserIdFilter(val.target.value)
+                if(val.target.value == "0"){
+                    setFilteredStyles(styles)
+                }
+            }}
+              label="User"
+            >
+                 <MenuItem value={"0"}>Admin</MenuItem>
+                {users.map((userFilter) => {
+                    const userLabelString = `${userFilter['username']} | ${userFilter['email']} | ${userFilter['company']}`
+                    return(
+                        <MenuItem value={userFilter['user_id']}>{userLabelString}</MenuItem>
+                    )
+                    
+                })}
+            </Select>
+          )}
+
+          <Stack direction={"row"} flexWrap={"wrap"} gap="20px">
+          <Button
+              style={{
+                backgroundColor: "whitesmoke",
+                color: "cadetblue",
+                border: "2px solid cadetblue",
+              }}
+              variant="contained"
+              onClick={() => {
+                setFilteredStyles(styles)
+            }}
+            >
+              Reset to all styles
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "whitesmoke",
+                color: "cadetblue",
+                border: "2px solid cadetblue",
+              }}
+              variant="contained"
+              onClick={async () => {
+                await handleFilterByUser()
+
+            }}
+            >
+              Filter Styles By User
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "whitesmoke",
+                color: "cadetblue",
+                border: "2px solid cadetblue",
+              }}
+              variant="contained"
+              onClick={() => addRemoveStylesToUser('remove')}
+            >
+              Remove Styles from this user
+            </Button>
+            <Button
+              style={{
+                backgroundColor: "whitesmoke",
+                color: "cadetblue",
+                border: "2px solid cadetblue",
+              }}
+              variant="contained"
+              onClick={() => addRemoveStylesToUser('add')}
+            >
+              Add Styles to this user
+            </Button>
             <Button
               style={{
                 backgroundColor: "whitesmoke",
@@ -177,7 +315,7 @@ export default function StaffStyles({
               </IconButton>
 
               <StylesTable
-                styles={getSelectedStyles(styles)}
+                styles={getSelectedStyles(filteredStyles)}
                 currentUser={currentUser}
               />
             </Box>
@@ -189,8 +327,8 @@ export default function StaffStyles({
             flexWrap={"wrap"}
             justifyContent={"center"}
           >
-            {styles &&
-              styles.map((style, i) => {
+            {filteredStyles &&
+              filteredStyles.map((style, i) => {
                 const numImages = style.images.length;
                 const currentImageIndex = style.current_image;
                 const currentImage =
@@ -258,9 +396,7 @@ export default function StaffStyles({
                             sx={{
                               position: "relative",
                               left: `${
-                                showRightIcon && showLeftIcon
-                                  ? "0px"
-                                  : "20px"
+                                showRightIcon && showLeftIcon ? "0px" : "20px"
                               }`,
                             }}
                             onClick={() => {
@@ -306,7 +442,9 @@ export default function StaffStyles({
               })}
           </Stack>
         </Stack>
-      ) : currentUser && !currentUser.is_staff ? (<p>You do not have access to this page</p>) : (
+      ) : currentUser && !currentUser.is_staff ? (
+        <p>You do not have access to this page</p>
+      ) : (
         <p>
           Please <Link to="/app/login">log in</Link> to view this page.
         </p>

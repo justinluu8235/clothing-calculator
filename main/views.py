@@ -64,7 +64,7 @@ class StyleCalculatorView(View):
 
 
 class UserStylesView(View):
-    def get(self, request, user_id):
+    def get(self, request, user_id, post_id=None):
         try:
             validate_token(request.headers.get("Authorization"), user_id)
         except Exception as e:
@@ -135,7 +135,57 @@ class StylesAdminView(View):
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
             style_results.append(style)
-        return JsonResponse({'style_data': style_results})
+        users = User.objects.all()
+        user_info_list = []
+        for user in users:
+            company = user.company.first().company_name if user.company.exists() else 'no-company'
+            user_info_list.append({
+                'user_id': user.id,
+                'username': user.username,
+                'email': user.email or 'no-email',
+                'company': company
+            })
+
+
+
+        return JsonResponse({'style_data': style_results, 'user_info_list': user_info_list})
+
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(pk=user_id)
+            if not user.is_staff:
+                return Response(data={"error": "access denied. not staff"}, status=400)
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+        data = json.loads(request.body)
+        target_user_id = data.get("target_user_id")
+        target_user = User.objects.get(pk=target_user_id)
+        user_styles = target_user.styles.all()
+        style_results = None
+        if data.get('action') == "fetch_user_styles":
+            user_styles_data = UserStyleSerializer(user_styles, many=True).data
+            style_results = []
+            for user_style_data in user_styles_data:
+                user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
+                style_results.append(user_style_data['style'])
+        elif data.get('action') == "add_styles_to_user":
+            selected_styles = data.get("selected_styles")
+            existing_style_ids = [user_style.style.id for user_style in user_styles]
+            selected_style_ids = [style['id'] for style in selected_styles]
+            # filter out the ones they already have assigned to them
+            style_ids_to_add = set(selected_style_ids) - set(existing_style_ids)
+            for style_id in style_ids_to_add:
+                style = Style.objects.get(pk=style_id)
+                UserStyle.objects.create(style=style, user=target_user)
+        elif data.get('action') == "remove_styles_from_user":
+            selected_styles = data.get("selected_styles")
+            existing_style_ids = [user_style.style.id for user_style in user_styles]
+            selected_style_ids = [style['id'] for style in selected_styles]
+            style_ids_to_delete = set(existing_style_ids) - set(selected_style_ids)
+            for style_id in style_ids_to_delete:
+                UserStyle.objects.get(user=target_user, style_id=style_id).delete()
+        return JsonResponse({'user_styles': style_results})
 
 
 

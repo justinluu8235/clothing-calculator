@@ -61,7 +61,8 @@ export default function ShowRoom({
 }: ShowRoomProps) {
   const { isLoading, error, data } = useQuery(
     ["style", currentUser, isTradeShow, isShowRoom],
-    fetchStyles
+    fetchStyles,
+{refetchOnMount: false}
   );
 
   const [styles, setStyles] = useState(null);
@@ -98,7 +99,6 @@ export default function ShowRoom({
       );
     });
   };
-
   const getSelectedStyles = (styles: any) => {
     if (styles) {
       return styles.filter(
