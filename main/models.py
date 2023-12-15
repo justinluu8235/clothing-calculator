@@ -77,6 +77,7 @@ class Style(models.Model):
     internal_notes = models.CharField(max_length=250, null=True, blank=True)
     washing_instructions = models.CharField(max_length=1000, null=True, blank=True)
     model_number = models.CharField(max_length=150, null=False)
+    fabric_model_number = models.CharField(max_length=150, null=True, blank=True)
     source = models.ForeignKey(StyleSource, on_delete=models.DO_NOTHING, null=True, blank=True,related_name="source")
     fabric_composition = models.CharField(max_length=250, blank=True)
     fabric_source = models.ForeignKey(FabricSource, on_delete=models.DO_NOTHING, null=True, blank=True, related_name="fabric_source")
