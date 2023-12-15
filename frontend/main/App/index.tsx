@@ -4,6 +4,7 @@ import StyleCalculator from '../StyleCalculator'
 import ShowRoom from '../ShowRoom'
 import Login from '../Login'
 import Navbar from '../Navbar'
+import StaffStyles from "../StaffStyles";
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();
 import { jwtDecode } from 'jwt-decode';
@@ -100,6 +101,7 @@ const AppWithRouter = () => {
         <Route path="/app/selected_for_you" element={<ShowRoom currentUser={currentUser}/>}/>
         <Route path="/app/tradeshow" element={<ShowRoom currentUser={currentUser} isTradeShow={true}/>}/>
         <Route path="/app/showroom" element={<ShowRoom currentUser={currentUser} isShowRoom={true}/>}/>
+        <Route path="/app/staff" element={<StaffStyles currentUser={currentUser} />}/>
     </Routes>
 
     </Router>

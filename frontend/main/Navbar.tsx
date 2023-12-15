@@ -53,6 +53,9 @@ export default function NavBar({ currentUser, handleLogout }: NavBarProps) {
         <MenuItem ><Link to="app/showroom" reloadDocument={true}>Showroom</Link></MenuItem>
         {/* <MenuItem ><Link to="app/" reloadDocument={true}>Style Calculator</Link></MenuItem> */}
         <MenuItem ><Link to="app/tradeshow" reloadDocument={true}>Tradeshow</Link></MenuItem>
+        {currentUser && currentUser.is_staff && (
+          <MenuItem ><Link to="app/staff" reloadDocument={true}>Staff Styles View</Link></MenuItem>
+        )}
       </Menu>
 
 

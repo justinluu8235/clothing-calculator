@@ -120,6 +120,25 @@ class ShowroomStylesView(View):
         return JsonResponse({'style_data': style_results})
 
 
+class StylesAdminView(View):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(pk=user_id)
+            if not user.is_staff:
+                return Response(data={"error": "access denied. not staff"}, status=400)
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+        styles = Style.objects.all()
+        styles_data = StyleSerializer(styles, many=True).data
+        style_results = []
+        for style in styles_data:
+            style['current_image'] = 0 if style['images'] else -1
+            style_results.append(style)
+        return JsonResponse({'style_data': style_results})
+
+
+
 
 class QuotationRequestView(View):
     def post(self, request, user_id):
