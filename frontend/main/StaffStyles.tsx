@@ -166,7 +166,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
       }
     }
     setFilteredStyles(filteredUserStyles);
-  }
+  };
 
   const updateStyleAtIndex = (index, styleObject) => {
     setFilteredStyles((prevStyles) => {
@@ -192,6 +192,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
     });
     setFilteredStyles(updatedStyles);
   };
+  console.log("sty", styles);
   return (
     <>
       {currentUser && currentUser.is_staff ? (
@@ -212,9 +213,15 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
           >
             Admin View
           </Typography>
-          <TextField id="outlined-basic" label="Search by model number" variant="outlined" onChange={(e) =>{filterByModelNumber(e.target.value)}}/>
+          <TextField
+            id="outlined-basic"
+            label="Search by model number"
+            variant="outlined"
+            onChange={(e) => {
+              filterByModelNumber(e.target.value);
+            }}
+          />
           {users && (
-            
             <Select
               labelId="demo-simple-select-standard-label"
               id="demo-simple-select-standard"
@@ -282,11 +289,10 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 }}
                 variant="contained"
                 onClick={() => {
-                  if(userIdFilter != "0"){  
+                  if (userIdFilter != "0") {
                     setModalMode("remove_styles");
                     setModalOpen(true);
                   }
-
                 }}
               >
                 Remove Styles from this user
@@ -299,7 +305,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 }}
                 variant="contained"
                 onClick={() => {
-                  if(userIdFilter != "0"){
+                  if (userIdFilter != "0") {
                     setModalOpen(true);
                     setModalMode("add_styles");
                   }
@@ -365,8 +371,9 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
               ) : modalMode == "add_styles" || modalMode == "remove_styles" ? (
                 <Stack flexDirection={"column"} gap="30px">
                   <Typography gutterBottom variant="subtitle2" component="div">
-
-                    Are you sure you want to {modalMode == "add_styles" ? "add" : "remove"} below styles to
+                    Are you sure you want to{" "}
+                    {modalMode == "add_styles" ? "add" : "remove"} below styles
+                    to
                     {
                       users.filter(
                         (user) => user["user_id"] == userIdFilter
@@ -391,25 +398,23 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                     )}
                   </Stack>
                   <Button
-                style={{
-                  backgroundColor: "whitesmoke",
-                  color: "cadetblue",
-                  border: "2px solid cadetblue",
-                }}
-                variant="contained"
-                onClick={() => {
-                  if(modalMode == "add_styles"){
-                    addRemoveStylesToUser("add");
-                  }
-                  else{
-                    addRemoveStylesToUser("remove");
-                  }
-                  setModalOpen(false)
-
-                }}
-              >
-                Confirm
-              </Button>
+                    style={{
+                      backgroundColor: "whitesmoke",
+                      color: "cadetblue",
+                      border: "2px solid cadetblue",
+                    }}
+                    variant="contained"
+                    onClick={() => {
+                      if (modalMode == "add_styles") {
+                        addRemoveStylesToUser("add");
+                      } else {
+                        addRemoveStylesToUser("remove");
+                      }
+                      setModalOpen(false);
+                    }}
+                  >
+                    Confirm
+                  </Button>
                 </Stack>
               ) : (
                 <></>
@@ -516,22 +521,27 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                     />
 
                     <CardContent>
-                      <Typography
-                        gutterBottom
-                        variant="subtitle2"
-                        component="div"
-                      >
-                        model : {style.model_number}
-                      </Typography>
-                      {style.minimum_order_quanitity && (
-                        <Typography
-                          gutterBottom
-                          variant="subtitle2"
-                          component="div"
-                        >
-                          MOQ: {style.minimum_order_quanitity}
-                        </Typography>
-                      )}
+                      {Object.keys(style).map((field) => {
+                        if(field == "current_image"){
+                          return <></>
+                        }
+                        return (
+                          <span key={`${style['id']}_${field}`}>
+                            {style.hasOwnProperty(field) &&
+                              style[field] &&
+                              (typeof style[field] == "number" ||
+                                typeof style[field] == "string") && (
+                                <Typography
+                                  gutterBottom
+                                  variant="subtitle2"
+                                  component="div"
+                                >
+                                  {field}: {style[field]}
+                                </Typography>
+                              )}
+                          </span>
+                        );
+                      })}
                     </CardContent>
                   </Card>
                 );

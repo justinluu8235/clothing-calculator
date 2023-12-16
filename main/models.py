@@ -63,11 +63,7 @@ class StyleSource(models.Model):
     def __str__(self):
         return self.source_name
 
-class FabricSource(models.Model):
-    source_name = models.CharField(max_length=250, blank=True)
 
-    def __str__(self):
-        return self.source_name
 
 
 class Style(models.Model):
@@ -79,13 +75,13 @@ class Style(models.Model):
     fabric_model_number = models.CharField(max_length=150, null=True, blank=True)
     source = models.ForeignKey(StyleSource, on_delete=models.SET_NULL, null=True, blank=True,related_name="source")
     fabric_composition = models.CharField(max_length=250, blank=True)
-    fabric_source = models.ForeignKey(FabricSource, on_delete=models.SET_NULL, null=True, blank=True, related_name="fabric_source")
     available_colors = models.CharField(max_length=250, blank=True)
     minimum_order_quantity = models.IntegerField(null=True, blank=True)
     is_showroom = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.model_number} - {self.name}"
+
 
 
 def style_image_upload_to(instance, filename):
@@ -108,6 +104,37 @@ class StyleImage(models.Model):
         client = S3Client()
         client.delete_objects(f"static/style_pics/style_{self.style.pk}/{self.pk}")
         super().delete(*args, **kwargs)
+
+
+def fabric_image_upload_to(instance, filename):
+    return f"fabric_information_pics/{instance.pk}/{filename}"
+
+
+class FabricInformation(models.Model):
+    company_name = models.CharField(max_length=250, blank=True)
+    color_swatch_image = models.FileField(blank=True, null=True, upload_to=fabric_image_upload_to)
+    style = models.ForeignKey(Style, on_delete=models.CASCADE, related_name="fabric_information")
+
+    def __str__(self):
+        return self.company_name
+
+    def save(self, *args, **kwargs):
+        pk = getattr(self, 'pk', None)
+        if pk:
+            client = S3Client()
+            client.delete_objects(f"static/fabric_information_pics/{self.pk}")
+        else:
+            next_pk = FabricInformation.objects.order_by(
+                '-pk').first().pk + 1 if FabricInformation.objects.exists() else 1
+            self.pk = next_pk
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        client = S3Client()
+        client.delete_objects(f"static/fabric_information_pics/{self.pk}")
+        super().delete(*args, **kwargs)
+
+
 
 class UserStyle(models.Model):
     style = models.ForeignKey(Style, on_delete=models.CASCADE)

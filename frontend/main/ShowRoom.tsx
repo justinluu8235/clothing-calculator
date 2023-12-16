@@ -68,6 +68,9 @@ export default function ShowRoom({
   const [styles, setStyles] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [company, setCompany] = useState(null);
+  const [touched, setTouched] = useState(false)
+  const [timeoutId, setTimeoutId] = useState(null)
+  
 
   const modalStyle = {
     position: "absolute" as "absolute",
@@ -117,7 +120,20 @@ export default function ShowRoom({
     setStyles(updatedStyles);
   };
   return (
-    <>
+    <div
+    onTouchStart={() => {
+      if(timeoutId){
+        clearTimeout(timeoutId)
+      }
+      let newTimeoutId
+      setTouched(true)
+      newTimeoutId = setTimeout(() => {
+        setTouched(false)
+      }, 2000)
+      setTimeoutId(newTimeoutId)
+
+    }}
+    >
       {currentUser ? (
         <Stack
           style={{ marginTop: "120px" }}
@@ -223,8 +239,10 @@ export default function ShowRoom({
                 const currentImage =
                   numImages > 0 ? style.images[currentImageIndex].image : null;
 
-                const showRightIcon = currentImageIndex + 1 < numImages 
-                const showLeftIcon = currentImageIndex - 1 >= 0 
+                const isHovered = style.hasOwnProperty("is_hovered") && !!style.is_hovered;
+
+                const showRightIcon = currentImageIndex + 1 < numImages && (isHovered || touched)
+                const showLeftIcon = currentImageIndex - 1 >= 0 && (isHovered || touched)
                 const addedToCart =
                   style.hasOwnProperty("added_cart") && !!style.added_cart;
                 
@@ -233,6 +251,16 @@ export default function ShowRoom({
                     <CardMedia
                       sx={{ width: "300px", height: "500px" }}
                       image={currentImage}
+                      onMouseEnter={() => {
+                        let newStyleObj = { ...style };
+                        newStyleObj.is_hovered = true;
+                        updateStyleAtIndex(i, newStyleObj);
+                      }}
+                      onMouseLeave = {() => {
+                        let newStyleObj = { ...style };
+                        newStyleObj.is_hovered = false;
+                        updateStyleAtIndex(i, newStyleObj);
+                      }}
                       children={
                         <>
                           {showRightIcon && (
@@ -275,9 +303,11 @@ export default function ShowRoom({
                             aria-label="save"
                             color="primary"
                             style={{
-                              backgroundColor: "cadetblue",
+                              backgroundColor: "whitesmoke",
+                              color: "black",
                               ...(addedToCart && {
                                 backgroundColor: green[500],
+                                color:"white",
                                 "&:hover": {
                                   backgroundColor: green[700],
                                 },
@@ -340,6 +370,6 @@ export default function ShowRoom({
           Please <Link to="/app/login">log in</Link> to view this page.
         </p>
       )}
-    </>
+    </div>
   );
 }

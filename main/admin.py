@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import (Style, StyleImage, UserStyle, StyleSource, FabricSource,
-                     ClientCompany, QuotationRequest)
+from .models import (Style, StyleImage, UserStyle, StyleSource,
+                     ClientCompany, QuotationRequest, FabricInformation)
 
 
 
@@ -19,6 +19,16 @@ class StyleImageInline(admin.TabularInline):
             return format_html('<img src="{}" width="50" height="50" />'.format(obj.image.url))
         return '-'
 
+class FabricInformationInline(admin.TabularInline):
+    model = FabricInformation
+    fields = ('company_name', 'color_swatch_image', 'image_preview')
+    extra=1
+    readonly_fields = ('image_preview',)
+
+    def image_preview(self, obj):
+        if obj.color_swatch_image:
+            return format_html('<img src="{}" width="50" height="50" />'.format(obj.color_swatch_image.url))
+        return '-'
 
 class UserStyleAdmin(admin.ModelAdmin):
     list_display = ('user_email', 'style_model_number')
@@ -33,7 +43,7 @@ class UserStyleAdmin(admin.ModelAdmin):
 
 
 class StyleAdmin(admin.ModelAdmin):
-    inlines = [StyleImageInline]
+    inlines = [StyleImageInline, FabricInformationInline]
     list_display = ('model_number','image_preview', 'showroom_style')
     list_filter = ("is_showroom", )
     actions = ['mark_selected_showroom', 'unmark_selected_showroom']
@@ -75,6 +85,6 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UserStyle, UserStyleAdmin)
 admin.site.register(StyleSource)
-admin.site.register(FabricSource)
+admin.site.register(FabricInformation)
 admin.site.register(ClientCompany)
 admin.site.register(QuotationRequest)

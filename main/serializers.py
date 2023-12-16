@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, StyleImage, Style, ClientCompany
-
+from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, StyleImage, Style, \
+    ClientCompany, FabricInformation
 
 
 class StylePricePointSerializer (serializers.ModelSerializer):
@@ -29,8 +29,14 @@ class StyleImageSerializer (serializers.ModelSerializer):
         model = StyleImage
         fields = '__all__'
 
+class FabricInformationSerializer (serializers.ModelSerializer):
+    class Meta:
+        model = FabricInformation
+        fields = '__all__'
+
 class StyleSerializer (serializers.ModelSerializer):
     images = StyleImageSerializer(many=True)
+    fabric_information = FabricInformationSerializer(many=True)
     class Meta:
         model = Style
         fields = '__all__'

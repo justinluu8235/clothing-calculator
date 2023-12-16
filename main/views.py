@@ -127,6 +127,12 @@ class ShowroomStylesView(View):
         style_results = []
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
+            # add a fabric information image if available
+            if style['fabric_information']:
+                fabric_information = style['fabric_information'][0]
+                fabric_info_image = fabric_information.get('color_swatch_image')
+                if fabric_info_image:
+                    style['images'].append({'id': -1, 'images':fabric_info_image})
             style_results.append(style)
         return JsonResponse({'style_data': style_results, 'company_info': company_data})
 

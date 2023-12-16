@@ -21,11 +21,18 @@ export default function StylesTable({ styles, currentUser }: StyleTableProps) {
             <Table sx={{ }} size="small" aria-label="a dense table">
                 <TableHead>
             <TableRow>
+                
+                <TableCell align="right">Image</TableCell>
+                <TableCell align="right">Color Swatch Image</TableCell>
                 <TableCell>Model Number </TableCell>
-                <TableCell align="right">Images</TableCell>
                 <TableCell align="right">Fabric Composition</TableCell>
                 <TableCell align="right">Available Colors</TableCell>
-                <TableCell align="right">Minimum Order Quantity</TableCell>
+                <TableCell align="right">Minimum Order Quantity (MOQ)</TableCell>
+                <TableCell align="right">Available Sizes</TableCell>
+                <TableCell align="right">Cost</TableCell>
+                <TableCell align="right">Notes</TableCell>
+
+                
             </TableRow>
             </TableHead>
             <TableBody>
@@ -34,8 +41,18 @@ export default function StylesTable({ styles, currentUser }: StyleTableProps) {
                     <TableRow key={style.id} 
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                        <TableCell> {style.model_number}</TableCell>
+                        
                         <TableCell> <img style={{width:'50px', height: '50px' }} src={style.images[0].image}/></TableCell>
+                        <TableCell> {style.fabric_information.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.fabric_information[0].color_swatch_image}/> : null}</TableCell>
+                        <TableCell> {style.model_number}</TableCell>
+                        <TableCell> {style.fabric_composition}</TableCell>
+                        <TableCell> {style.available_colors}</TableCell>
+                        <TableCell> {style.minimum_order_quantity}</TableCell>
+                        <TableCell> </TableCell>
+                        <TableCell> </TableCell>
+                        <TableCell></TableCell>
+
+
                     </TableRow>
                     )
                 })}
