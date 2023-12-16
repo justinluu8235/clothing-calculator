@@ -8,7 +8,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { IconButton, MenuItem, Select } from "@mui/material";
+import { Chip, IconButton, MenuItem, Select, TextField } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Fab from "@mui/material/Fab";
@@ -21,6 +21,7 @@ import StyleRequestForm from "./StyleRequestForm";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
 import getCookie from "./App/utils/getCookie";
 import StylesTable from "./StylesTable";
+import { CircularProgress } from "@mui/material";
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -39,7 +40,7 @@ const fetchStyles = async ({ queryKey }) => {
     const { id: userId, userEmail, expiration } = currentUser;
     queryURL = `${URL}styles_admin/${userId}`;
     const result = await axios.get(queryURL);
-    console.log('res', result)
+    console.log("res", result);
     return result.data;
   }
   return null;
@@ -50,18 +51,24 @@ interface StaffStylesProps {
 }
 
 export default function StaffStyles({ currentUser }: StaffStylesProps) {
-  const { isLoading, error, data} = useQuery(
-    ["style", currentUser],
-    fetchStyles, 
-    {refetchOnMount: false, refetchOnWindowFocus: false}
-  );
+  const {
+    isLoading: isInitialLoading,
+    error,
+    data,
+  } = useQuery(["style", currentUser], fetchStyles, {
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   const [styles, setStyles] = useState(null);
   const [users, setUsers] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [userIdFilter, setUserIdFilter] = useState("0");
   const [filteredStyles, setFilteredStyles] = useState(null);
- console.log('gi')
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalMode, setModalMode] = useState("");
+
+  console.log("gi");
   const modalStyle = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -89,66 +96,76 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
 
   const addRemoveStylesToUser = (operation) => {
     const userStyleURL = `${URL}styles_admin/${currentUser.id}`;
+    setIsLoading(true);
     axios
-    .post(
+      .post(
         userStyleURL,
-      { 
-        action: operation == 'add' ? 'add_styles_to_user' : 'remove_styles_from_user', 
-        target_user_id: userIdFilter, 
-        selected_styles: getSelectedStyles(filteredStyles)},
-      {
-        headers: {
-          "X-CSRFToken": getCookie("csrftoken"),
+        {
+          action:
+            operation == "add"
+              ? "add_styles_to_user"
+              : "remove_styles_from_user",
+          target_user_id: userIdFilter,
+          selected_styles: getSelectedStyles(filteredStyles),
         },
-      }
-    )
-    .then((response) => {
-      console.log("response", response);
-      if(operation == "remove"){
-        handleFilterByUser()
-      }
-
-    })
-    .catch((err) => {
-      console.log("error", err);
-    });
-  }
+        {
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+        }
+      )
+      .then((response) => {
+        setIsLoading(false);
+        if (operation == "remove") {
+          handleFilterByUser();
+        }
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setIsLoading(false);
+      });
+  };
   const handleFilterByUser = async () => {
     const userStyleURL = `${URL}styles_admin/${currentUser.id}`;
-    const result = await 
-    axios
-    .post(
+    setIsLoading(true);
+    const result = await axios
+      .post(
         userStyleURL,
-      { action: 'fetch_user_styles', target_user_id: userIdFilter },
-      {
-        headers: {
-          "X-CSRFToken": getCookie("csrftoken"),
-        },
-      }
-    )
-    .then((response) => {
-      console.log("response", response);
-      const userStylesData = response.data['user_styles']
-      const filteredUserStyles = []
-      for (const userStyle of userStylesData){
-          const styleId = userStyle['id'] 
+        { action: "fetch_user_styles", target_user_id: userIdFilter },
+        {
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+        }
+      )
+      .then((response) => {
+        setIsLoading(false);
+        const userStylesData = response.data["user_styles"];
+        const filteredUserStyles = [];
+        for (const userStyle of userStylesData) {
+          const styleId = userStyle["id"];
           //find the style
-          for(const [index, style] of styles.entries()){
-              if (style && styleId == style['id']){
-                  filteredUserStyles.push({...style})
-              }
+          for (const [index, style] of styles.entries()) {
+            if (style && styleId == style["id"]) {
+              filteredUserStyles.push({ ...style });
+            }
           }
-  
+        }
+        setFilteredStyles(filteredUserStyles);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setIsLoading(false);
+      });
+  };
+  const filterByModelNumber = (modelNumber) => {
+    const filteredUserStyles = [];
+    for (const [index, style] of styles.entries()) {
+      if (style && modelNumber == style["model_number"]) {
+        filteredUserStyles.push({ ...style });
       }
-      setFilteredStyles(filteredUserStyles)
-
-    })
-    .catch((err) => {
-      console.log("error", err);
-    });
-
-
-
+    }
+    setFilteredStyles(filteredUserStyles);
   }
 
   const updateStyleAtIndex = (index, styleObject) => {
@@ -168,12 +185,12 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
     }
     return [];
   };
-
-  const unSelectAllStyles = () => {
+  const unSelectAllStyles = (styles: any) => {
+    console.log("style", styles);
     const updatedStyles = styles.map((style) => {
       return { ...style, added_cart: false };
     });
-    setStyles(updatedStyles);
+    setFilteredStyles(updatedStyles);
   };
   return (
     <>
@@ -195,105 +212,129 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
           >
             Admin View
           </Typography>
+          <TextField id="outlined-basic" label="Search by model number" variant="outlined" onChange={(e) =>{filterByModelNumber(e.target.value)}}/>
           {users && (
+            
             <Select
               labelId="demo-simple-select-standard-label"
               id="demo-simple-select-standard"
               value={userIdFilter}
               onChange={async (val) => {
-                setUserIdFilter(val.target.value)
-                if(val.target.value == "0"){
-                    setFilteredStyles(styles)
+                setUserIdFilter(val.target.value);
+                if (val.target.value == "0") {
+                  setFilteredStyles(styles);
                 }
-            }}
+              }}
               label="User"
             >
-                 <MenuItem value={"0"}>Admin</MenuItem>
-                {users.map((userFilter) => {
-                    const userLabelString = `${userFilter['username']} | ${userFilter['email']} | ${userFilter['company']}`
-                    return(
-                        <MenuItem value={userFilter['user_id']}>{userLabelString}</MenuItem>
-                    )
-                    
-                })}
+              <MenuItem value={"0"}>Select By User</MenuItem>
+              {users.map((userFilter) => {
+                const userLabelString = `${userFilter["username"]} | ${userFilter["email"]} | ${userFilter["company"]}`;
+                return (
+                  <MenuItem value={userFilter["user_id"]}>
+                    {userLabelString}
+                  </MenuItem>
+                );
+              })}
             </Select>
           )}
 
-          <Stack direction={"row"} flexWrap={"wrap"} gap="20px">
-          <Button
-              style={{
-                backgroundColor: "whitesmoke",
-                color: "cadetblue",
-                border: "2px solid cadetblue",
-              }}
-              variant="contained"
-              onClick={() => {
-                setFilteredStyles(styles)
-            }}
+          {isLoading || isInitialLoading ? (
+            <CircularProgress />
+          ) : (
+            <Stack
+              direction={"row"}
+              flexWrap={"wrap"}
+              gap="20px"
+              justifyContent="center"
             >
-              Reset to all styles
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "whitesmoke",
-                color: "cadetblue",
-                border: "2px solid cadetblue",
-              }}
-              variant="contained"
-              onClick={async () => {
-                await handleFilterByUser()
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={() => {
+                  setFilteredStyles(styles);
+                }}
+              >
+                Reset to all styles
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={async () => {
+                  await handleFilterByUser();
+                }}
+              >
+                Filter Styles By User
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={() => {
+                  if(userIdFilter != "0"){  
+                    setModalMode("remove_styles");
+                    setModalOpen(true);
+                  }
 
-            }}
-            >
-              Filter Styles By User
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "whitesmoke",
-                color: "cadetblue",
-                border: "2px solid cadetblue",
-              }}
-              variant="contained"
-              onClick={() => addRemoveStylesToUser('remove')}
-            >
-              Remove Styles from this user
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "whitesmoke",
-                color: "cadetblue",
-                border: "2px solid cadetblue",
-              }}
-              variant="contained"
-              onClick={() => addRemoveStylesToUser('add')}
-            >
-              Add Styles to this user
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "whitesmoke",
-                color: "cadetblue",
-                border: "2px solid cadetblue",
-              }}
-              variant="contained"
-              onClick={() => {
-                setModalOpen(true);
-              }}
-            >
-              Export CSV
-            </Button>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              style={{ backgroundColor: "cadetblue", left: "30px" }}
-              sx={{ mr: 2 }}
-              onClick={unSelectAllStyles}
-            >
-              <CloseOutlined />
-            </IconButton>
-          </Stack>
+                }}
+              >
+                Remove Styles from this user
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={() => {
+                  if(userIdFilter != "0"){
+                    setModalOpen(true);
+                    setModalMode("add_styles");
+                  }
+                }}
+              >
+                Add Styles to this user
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={() => {
+                  setModalOpen(true);
+                  setModalMode("csv_table");
+                }}
+              >
+                Export CSV
+              </Button>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                style={{ backgroundColor: "cadetblue", left: "30px" }}
+                sx={{ mr: 2 }}
+                onClick={() => unSelectAllStyles(filteredStyles)}
+              >
+                <CloseOutlined />
+              </IconButton>
+            </Stack>
+          )}
+
           <Modal
             open={modalOpen}
             onClose={() => {}}
@@ -316,11 +357,63 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
               >
                 <CloseOutlined />
               </IconButton>
+              {modalMode == "csv_table" ? (
+                <StylesTable
+                  styles={getSelectedStyles(filteredStyles)}
+                  currentUser={currentUser}
+                />
+              ) : modalMode == "add_styles" || modalMode == "remove_styles" ? (
+                <Stack flexDirection={"column"} gap="30px">
+                  <Typography gutterBottom variant="subtitle2" component="div">
 
-              <StylesTable
-                styles={getSelectedStyles(filteredStyles)}
-                currentUser={currentUser}
-              />
+                    Are you sure you want to {modalMode == "add_styles" ? "add" : "remove"} below styles to
+                    {
+                      users.filter(
+                        (user) => user["user_id"] == userIdFilter
+                      )[0]["email"]
+                    }
+                    ?
+                  </Typography>
+                  <Stack flexDirection={"row"} gap={"20px"}>
+                    {getSelectedStyles(filteredStyles).map(
+                      (requested_style) => {
+                        return (
+                          <Chip
+                            sx={{
+                              backgroundColor: "whitesmoke",
+                              color: "cadetblue",
+                              border: "2px solid cadetblue",
+                            }}
+                            label={requested_style.model_number}
+                          />
+                        );
+                      }
+                    )}
+                  </Stack>
+                  <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={() => {
+                  if(modalMode == "add_styles"){
+                    addRemoveStylesToUser("add");
+                  }
+                  else{
+                    addRemoveStylesToUser("remove");
+                  }
+                  setModalOpen(false)
+
+                }}
+              >
+                Confirm
+              </Button>
+                </Stack>
+              ) : (
+                <></>
+              )}
             </Box>
           </Modal>
 

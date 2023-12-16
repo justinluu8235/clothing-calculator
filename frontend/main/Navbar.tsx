@@ -44,7 +44,7 @@ export default function NavBar({ currentUser, handleLogout }: NavBarProps) {
         id="basic-menu"
         anchorEl={anchorEl}
         open={open}
-        onClose={()=>{}}
+        onClose={()=>{setAnchorEl(null)}}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}

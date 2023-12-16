@@ -37,7 +37,8 @@ interface AppProps {
 const App = ({ currentUser }: AppProps) => {
   return (
     <div>
-      <StyleCalculator currentUser={currentUser} />
+      <Navigate to="/app/login" replace={true} />
+      {/* <StyleCalculator currentUser={currentUser} /> */}
     </div>
   );
 };
@@ -99,6 +100,7 @@ const AppWithRouter = () => {
                 <Login
                   nowCurrentUser={nowCurrentUser}
                   handleLogout={handleLogout}
+                  currentUser={currentUser}
                 />
               }
             />

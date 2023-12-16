@@ -34,16 +34,29 @@ class UserStyleAdmin(admin.ModelAdmin):
 
 class StyleAdmin(admin.ModelAdmin):
     inlines = [StyleImageInline]
-    list_display = ('model_number','image_preview')
+    list_display = ('model_number','image_preview', 'showroom_style')
+    list_filter = ("is_showroom", )
+    actions = ['mark_selected_showroom', 'unmark_selected_showroom']
 
-
-
+    def showroom_style(self, obj):
+        if obj.is_showroom:
+            return format_html('<span style="color: green;">&#10004;</span>')
+        else:
+            return format_html('<span style="color: red;">&#10008;</span>')
 
     def image_preview(self, obj):
         if obj.images.exists():
             first_image = obj.images.first()
             return format_html('<img src="{}" width="50" height="50" />'.format(first_image.image.url))
         return '-'
+
+    def mark_selected_showroom(self, request, queryset):
+        queryset.update(is_showroom=True)
+    mark_selected_showroom.short_description = "Mark selected as showroom"
+
+    def unmark_selected_showroom(self, request, queryset):
+        queryset.update(is_showroom=False)
+    unmark_selected_showroom.short_description = "Unmark selected as showroom"
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'company')

@@ -59,15 +59,15 @@ export default function ShowRoom({
   isTradeShow = false,
   isShowRoom = false,
 }: ShowRoomProps) {
-  const { isLoading, error, data, refetch} = useQuery(
+  const { isLoading, error, data, refetch } = useQuery(
     ["style", currentUser, isTradeShow, isShowRoom],
     fetchStyles,
-    {refetchOnMount: false, refetchOnWindowFocus: false}
+    { refetchOnMount: false, refetchOnWindowFocus: false }
   );
 
   const [styles, setStyles] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [company, setCompany] = useState(null)
+  const [company, setCompany] = useState(null);
 
   const modalStyle = {
     position: "absolute" as "absolute",
@@ -89,7 +89,7 @@ export default function ShowRoom({
   useEffect(() => {
     if (data) {
       setStyles(data["style_data"]);
-      setCompany(data['company_info'])
+      setCompany(data["company_info"]);
     }
   }, [data, currentUser]);
 
@@ -116,7 +116,6 @@ export default function ShowRoom({
     });
     setStyles(updatedStyles);
   };
-  console.log('current user', currentUser)
   return (
     <>
       {currentUser ? (
@@ -135,7 +134,13 @@ export default function ShowRoom({
             fontFamily={"fantasy"}
             textAlign={"center"}
           >
-            {isShowRoom ? "Veisais Showroom" : isTradeShow ? "Magic Show 2024 Feb: Kachii Fashion " : currentUser.company_name && currentUser.company_name.length < 40 ? `Selected For ${currentUser.company_name}`:"Selected For You"}
+            {isShowRoom
+              ? "Veisais Showroom"
+              : isTradeShow
+              ? "Magic Show 2024 Feb: Kachii Fashion "
+              : currentUser.company_name && currentUser.company_name.length < 40
+              ? `Selected For ${currentUser.company_name}`
+              : "Selected For You"}
           </Typography>
           <Stack direction={"row"}>
             <Button
@@ -151,6 +156,7 @@ export default function ShowRoom({
             >
               Request a Quotation
             </Button>
+
             <IconButton
               size="large"
               edge="start"
@@ -182,8 +188,8 @@ export default function ShowRoom({
                 }}
                 sx={{ mr: 2 }}
                 onClick={() => {
-                  setModalOpen(false)
-                  refetch()
+                  setModalOpen(false);
+                  refetch();
                 }}
               >
                 <CloseOutlined />
@@ -197,7 +203,13 @@ export default function ShowRoom({
               />
             </Box>
           </Modal>
-
+          {!isShowRoom && styles && styles.length == 0 && (
+            <Typography gutterBottom variant="h6" component="div" textAlign={"center"} style={{margin:"20px"}}>
+              No styles here... Tell us what styles you are interested in by
+              emailing us at veisais.aca@gmail.com or telling us more in the request
+              a quotation form!
+            </Typography>
+          )}
           <Stack
             direction={"row"}
             gap={"40px"}
@@ -211,10 +223,11 @@ export default function ShowRoom({
                 const currentImage =
                   numImages > 0 ? style.images[currentImageIndex].image : null;
 
-                const showRightIcon = currentImageIndex + 1 < numImages;
-                const showLeftIcon = currentImageIndex - 1 >= 0;
+                const showRightIcon = currentImageIndex + 1 < numImages 
+                const showLeftIcon = currentImageIndex - 1 >= 0 
                 const addedToCart =
                   style.hasOwnProperty("added_cart") && !!style.added_cart;
+                
                 return (
                   <Card key={i}>
                     <CardMedia
@@ -272,9 +285,10 @@ export default function ShowRoom({
                             }}
                             sx={{
                               position: "relative",
+                              top:"3px", 
                               left: `${
                                 showRightIcon && showLeftIcon
-                                  ? "160px"
+                                  ? "160px" : !showRightIcon && !showLeftIcon ? "243px" 
                                   : "200px"
                               }`,
                             }}
