@@ -35,7 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    # "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
+    "clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
     "35.83.40.87",
 ]
 
@@ -64,7 +64,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'corsheaders.middleware.CorsMiddleware',
 ]
-
+CORS_ALLOW_HEADERS = ['*']
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
@@ -73,7 +73,7 @@ CORS_ALLOWED_ORIGINS = [
 
 ]
 CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
-
+CSRF_TRUSTED_ORIGINS= CORS_ALLOWED_ORIGINS
 ROOT_URLCONF = "base_project.urls"
 
 TEMPLATES = [
