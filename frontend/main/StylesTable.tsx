@@ -15,7 +15,6 @@ interface StyleTableProps {
   
 export default function StylesTable({ styles, currentUser }: StyleTableProps) {
 
-    console.log('styles', styles)
     return(
         <TableContainer component={Paper}>
             <Table sx={{ }} size="small" aria-label="a dense table">
@@ -39,18 +38,19 @@ export default function StylesTable({ styles, currentUser }: StyleTableProps) {
                 {styles.map((style) => {
                     return (
                     <TableRow key={style.id} 
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{ '&:last-child td, &:last-child th': { border: 1 }, 'td, th': {border:1} }}
+                    style={{border:1}}
                     >
                         
-                        <TableCell> {style.images.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.images[0].image}/> : null}</TableCell>
-                        <TableCell> {style.fabric_information.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.fabric_information[0].color_swatch_image}/> : null}</TableCell>
+                        <TableCell> {style.images.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.images[0].image}/> : "-"}</TableCell>
+                        <TableCell> {style.fabric_information.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.fabric_information[0].color_swatch_image}/> : "-"}</TableCell>
                         <TableCell> {style.model_number}</TableCell>
-                        <TableCell> {style.fabric_composition}</TableCell>
-                        <TableCell> {style.available_colors}</TableCell>
-                        <TableCell> {style.minimum_order_quantity}</TableCell>
-                        <TableCell> </TableCell>
-                        <TableCell> </TableCell>
-                        <TableCell></TableCell>
+                        <TableCell> {style.fabric_composition ? style.fabric_composition: "-"}</TableCell>
+                        <TableCell> {style.available_colors ? style.available_colors : "-"}</TableCell>
+                        <TableCell> {style.minimum_order_quantity ? style.minimum_order_quanitity : "-"}</TableCell>
+                        <TableCell>-</TableCell>
+                        <TableCell>-</TableCell>
+                        <TableCell>-</TableCell>
 
 
                     </TableRow>
