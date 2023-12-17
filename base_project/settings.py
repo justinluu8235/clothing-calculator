@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "main.apps.MainConfig",
     "storages",
-    'corsheaders'
+    # 'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -62,16 +62,16 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
-    "https://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
-
-]
+#
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
+#     "https://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
+#
+# ]
 
 ROOT_URLCONF = "base_project.urls"
 
