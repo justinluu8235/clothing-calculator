@@ -75,7 +75,7 @@ class UserStylesView(View):
         companies = ClientCompany.objects.filter(user=user)
         company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
 
-        user_styles = user.styles.filter(style__is_showroom=False)
+        user_styles = user.styles.all()
         user_styles_data = UserStyleSerializer(user_styles, many=True).data
 
         for user_style_data in user_styles_data:
