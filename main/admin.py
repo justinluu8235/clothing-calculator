@@ -44,12 +44,18 @@ class UserStyleAdmin(admin.ModelAdmin):
 
 class StyleAdmin(admin.ModelAdmin):
     inlines = [StyleImageInline, FabricInformationInline]
-    list_display = ('id', 'model_number','image_preview', 'showroom_style')
-    list_filter = ("is_showroom", )
+    list_display = ('id', 'model_number','image_preview', 'showroom_style', 'tradeshow_style')
+    list_filter = ("is_showroom", "is_tradeshow")
     actions = ['mark_selected_showroom', 'unmark_selected_showroom']
 
     def showroom_style(self, obj):
         if obj.is_showroom:
+            return format_html('<span style="color: green;">&#10004;</span>')
+        else:
+            return format_html('<span style="color: red;">&#10008;</span>')
+
+    def tradeshow_style(self, obj):
+        if obj.is_tradeshow:
             return format_html('<span style="color: green;">&#10004;</span>')
         else:
             return format_html('<span style="color: red;">&#10008;</span>')
@@ -67,6 +73,14 @@ class StyleAdmin(admin.ModelAdmin):
     def unmark_selected_showroom(self, request, queryset):
         queryset.update(is_showroom=False)
     unmark_selected_showroom.short_description = "Unmark selected as showroom"
+
+    def mark_selected_tradeshow(self, request, queryset):
+        queryset.update(is_tradeshow=True)
+    mark_selected_tradeshow.short_description = "Mark selected as tradeshow"
+
+    def unmark_selected_tradeshow(self, request, queryset):
+        queryset.update(is_tradeshow=False)
+    unmark_selected_tradeshow.short_description = "Unmark selected as tradeshow"
 
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'company')

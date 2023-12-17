@@ -78,6 +78,7 @@ class Style(models.Model):
     available_colors = models.CharField(max_length=250, blank=True)
     minimum_order_quantity = models.IntegerField(null=True, blank=True)
     is_showroom = models.BooleanField(default=False)
+    is_tradeshow = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.model_number} - {self.name}"

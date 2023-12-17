@@ -103,7 +103,7 @@ class TradeshowStylesView(View):
         company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
 
         # right now this returns all styles, but in the future, maybe we can do a style.is_tradeshow
-        styles = Style.objects.all()
+        styles = Style.objects.filter(is_tradeshow=True)
         styles_data = StyleSerializer(styles, many=True).data
         style_results = []
         for style in styles_data:
