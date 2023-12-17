@@ -70,7 +70,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com',
-    '*',
 
 ]
 ROOT_URLCONF = "base_project.urls"
