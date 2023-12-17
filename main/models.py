@@ -116,7 +116,7 @@ class FabricInformation(models.Model):
     style = models.ForeignKey(Style, on_delete=models.CASCADE, related_name="fabric_information")
 
     def __str__(self):
-        return self.company_name
+        return f"{self.pk}_{self.company_name}"
 
     def save(self, *args, **kwargs):
         pk = getattr(self, 'pk', None)

@@ -10,7 +10,7 @@ from .models import (Style, StyleImage, UserStyle, StyleSource,
 
 class StyleImageInline(admin.TabularInline):
     model = StyleImage
-    fields = ('image', 'image_preview')
+    fields = ('id','image', 'image_preview')
     extra=1
     readonly_fields = ('image_preview',)
 
@@ -21,7 +21,7 @@ class StyleImageInline(admin.TabularInline):
 
 class FabricInformationInline(admin.TabularInline):
     model = FabricInformation
-    fields = ('company_name', 'color_swatch_image', 'image_preview')
+    fields = ('id', 'company_name', 'color_swatch_image', 'image_preview')
     extra=1
     readonly_fields = ('image_preview',)
 
@@ -44,7 +44,7 @@ class UserStyleAdmin(admin.ModelAdmin):
 
 class StyleAdmin(admin.ModelAdmin):
     inlines = [StyleImageInline, FabricInformationInline]
-    list_display = ('model_number','image_preview', 'showroom_style')
+    list_display = ('id', 'model_number','image_preview', 'showroom_style')
     list_filter = ("is_showroom", )
     actions = ['mark_selected_showroom', 'unmark_selected_showroom']
 
@@ -85,6 +85,5 @@ admin.site.register(User, CustomUserAdmin)
 admin.site.register(Style, StyleAdmin)
 admin.site.register(UserStyle, UserStyleAdmin)
 admin.site.register(StyleSource)
-admin.site.register(FabricInformation)
 admin.site.register(ClientCompany)
 admin.site.register(QuotationRequest)
