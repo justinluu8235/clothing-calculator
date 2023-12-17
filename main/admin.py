@@ -46,7 +46,7 @@ class StyleAdmin(admin.ModelAdmin):
     inlines = [StyleImageInline, FabricInformationInline]
     list_display = ('id', 'model_number','image_preview', 'showroom_style', 'tradeshow_style')
     list_filter = ("is_showroom", "is_tradeshow")
-    actions = ['mark_selected_showroom', 'unmark_selected_showroom']
+    actions = ['mark_selected_showroom', 'unmark_selected_showroom','mark_selected_tradeshow', 'unmark_selected_tradeshow']
 
     def showroom_style(self, obj):
         if obj.is_showroom:
