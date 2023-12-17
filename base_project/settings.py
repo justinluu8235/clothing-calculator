@@ -66,12 +66,13 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
-    "https://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com",
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com',
+    'https://clothing-calculator-env.eba-qnfpfgsz.us-west-2.elasticbeanstalk.com',
 
 ]
+CORS_ORIGIN_WHITELIST = CORS_ALLOWED_ORIGINS
 
 ROOT_URLCONF = "base_project.urls"
 
