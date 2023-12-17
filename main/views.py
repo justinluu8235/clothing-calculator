@@ -75,17 +75,18 @@ class UserStylesView(View):
         companies = ClientCompany.objects.filter(user=user)
         company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
 
-        # if user.is_superuser and user.is_staff:
-        #     styles = Style.objects.filter(is_showroom=False)
-        #     styles_data = StyleSerializer(styles, many=True).data
-        #     for style in styles_data:
-        #         style['current_image'] = 0 if style['images'] else -1
-        #         style_results.append(style)
         user_styles = user.styles.filter(style__is_showroom=False)
         user_styles_data = UserStyleSerializer(user_styles, many=True).data
 
         for user_style_data in user_styles_data:
             user_style_data['style']['current_image'] = 0 if user_style_data['style']['images'] else -1
+            # add a fabric information image if available
+            if user_style_data['style']['fabric_information']:
+                fabric_information = user_style_data['style']['fabric_information'][0]
+                fabric_info_image = fabric_information.get('color_swatch_image')
+                if fabric_info_image:
+                    user_style_data['style']['images'].append({'id': -1, 'image':fabric_info_image})
+
             style_results.append(user_style_data['style'])
 
         return JsonResponse({'style_data': style_results, 'company_info': company_data})
@@ -107,6 +108,12 @@ class TradeshowStylesView(View):
         style_results = []
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
+            # add a fabric information image if available
+            if style['fabric_information']:
+                fabric_information = style['fabric_information'][0]
+                fabric_info_image = fabric_information.get('color_swatch_image')
+                if fabric_info_image:
+                    style['images'].append({'id': -1, 'image':fabric_info_image})
             style_results.append(style)
         return JsonResponse({'style_data': style_results, 'company_info': company_data})
 
@@ -132,7 +139,7 @@ class ShowroomStylesView(View):
                 fabric_information = style['fabric_information'][0]
                 fabric_info_image = fabric_information.get('color_swatch_image')
                 if fabric_info_image:
-                    style['images'].append({'id': -1, 'images':fabric_info_image})
+                    style['images'].append({'id': -1, 'image':fabric_info_image})
             style_results.append(style)
         return JsonResponse({'style_data': style_results, 'company_info': company_data})
 
@@ -151,6 +158,12 @@ class StylesAdminView(View):
         style_results = []
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
+            # add a fabric information image if available
+            if style['fabric_information']:
+                fabric_information = style['fabric_information'][0]
+                fabric_info_image = fabric_information.get('color_swatch_image')
+                if fabric_info_image:
+                    style['images'].append({'id': -1, 'image': fabric_info_image})
             style_results.append(style)
         users = User.objects.all()
         user_info_list = []

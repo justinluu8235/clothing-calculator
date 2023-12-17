@@ -90,7 +90,7 @@ export default function Login({
             textAlign={"center"}
             fontFamily={"fantasy"}
           >
-            Logged in as currentUser.email
+            Logged in as {currentUser.email}
           </Typography>
         ) : (
           <Box

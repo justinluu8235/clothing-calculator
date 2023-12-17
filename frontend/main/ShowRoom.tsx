@@ -43,6 +43,7 @@ const fetchStyles = async ({ queryKey }) => {
       queryURL = `${URL}user_styles/${userId}`;
     }
     const result = await axios.get(queryURL);
+    console.log('result', result.data)
     return result.data;
   }
   return null;
