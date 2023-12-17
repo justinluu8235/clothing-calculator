@@ -42,7 +42,7 @@ export default function StylesTable({ styles, currentUser }: StyleTableProps) {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         
-                        <TableCell> <img style={{width:'50px', height: '50px' }} src={style.images[0].image}/></TableCell>
+                        <TableCell> {style.images.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.images[0].image}/> : null}</TableCell>
                         <TableCell> {style.fabric_information.length > 0 ? <img style={{width:'50px', height: '50px' }} src={style.fabric_information[0].color_swatch_image}/> : null}</TableCell>
                         <TableCell> {style.model_number}</TableCell>
                         <TableCell> {style.fabric_composition}</TableCell>
