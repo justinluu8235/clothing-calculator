@@ -153,7 +153,7 @@ class StylesAdminView(View):
             validate_token(request.headers.get("Authorization"), user_id)
         except Exception as e:
             return Response(data={"error": "access denied..who are you?"}, status=400)
-        styles = Style.objects.all()
+        styles = Style.objects.all().order_by("id")
         styles_data = StyleSerializer(styles, many=True).data
         style_results = []
         for style in styles_data:

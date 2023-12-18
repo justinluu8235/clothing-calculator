@@ -343,7 +343,7 @@ export default function ShowRoom({
                       }
                     />
 
-                    <CardContent>
+                    <CardContent sx={{width: "300px"}}>
                       <Typography
                         gutterBottom
                         variant="subtitle2"

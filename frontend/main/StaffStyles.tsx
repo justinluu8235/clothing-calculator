@@ -520,7 +520,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                       }
                     />
 
-                    <CardContent>
+                    <CardContent sx={{width: "150px"}}>
                       {Object.keys(style).map((field) => {
                         if(field == "current_image"){
                           return <></>

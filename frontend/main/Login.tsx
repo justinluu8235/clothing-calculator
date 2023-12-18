@@ -37,6 +37,7 @@ export default function Login({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [error, setError] = useState("")
 
   const theme = createTheme({
     palette: {
@@ -50,6 +51,7 @@ export default function Login({
       email: email,
       password: password,
     };
+    setError("")
 
     axios
       .post(`${ENDPOINT}/login/`, loginData, {
@@ -71,6 +73,7 @@ export default function Login({
       })
       .catch((err) => {
         console.log("error", err);
+        setError("error logging in")
       });
   };
 
@@ -128,14 +131,17 @@ export default function Login({
               >
                 Login
               </Button>
-
-              <Button
-                style={{ backgroundColor: "white", color: "blue" }}
-                variant="outlined"
-                onClick={handleLogout}
+              {error && (
+              <Typography
+              variant="subtitle1"
+              color="red"
               >
-                Logout
-              </Button>
+                Error logging in.
+              </Typography>
+              )}
+
+
+
             </Stack>
           </Box>
         )}
