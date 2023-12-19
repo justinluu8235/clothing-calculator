@@ -103,7 +103,7 @@ class TradeshowStylesView(View):
         company_data = ClientCompanySerializer(companies.first(), many=False).data if companies.exists() else {}
 
         # right now this returns all styles, but in the future, maybe we can do a style.is_tradeshow
-        styles = Style.objects.filter(is_tradeshow=True)
+        styles = Style.objects.filter(is_tradeshow=True).order_by('model_number')
         styles_data = StyleSerializer(styles, many=True).data
         style_results = []
         for style in styles_data:
@@ -155,7 +155,7 @@ class StylesAdminView(View):
             return Response(data={"error": "access denied..who are you?"}, status=400)
         styles = Style.objects.all().order_by("id")
         styles_data = StyleSerializer(styles, many=True).data
-        style_results = []
+        style_by_id_results = {}
         for style in styles_data:
             style['current_image'] = 0 if style['images'] else -1
             # add a fabric information image if available
@@ -164,7 +164,7 @@ class StylesAdminView(View):
                 fabric_info_image = fabric_information.get('color_swatch_image')
                 if fabric_info_image:
                     style['images'].append({'id': -1, 'image': fabric_info_image})
-            style_results.append(style)
+            style_by_id_results[style['id']] = style
         users = User.objects.all()
         user_info_list = []
         for user in users:
@@ -178,7 +178,7 @@ class StylesAdminView(View):
 
 
 
-        return JsonResponse({'style_data': style_results, 'user_info_list': user_info_list})
+        return JsonResponse({'style_data': style_by_id_results, 'user_info_list': user_info_list})
 
     def post(self, request, user_id):
         try:

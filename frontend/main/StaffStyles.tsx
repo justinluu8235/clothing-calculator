@@ -68,7 +68,6 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [modalMode, setModalMode] = useState("");
 
-  console.log("gi");
   const modalStyle = {
     position: "absolute" as "absolute",
     top: "50%",
@@ -89,7 +88,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
   useEffect(() => {
     if (data) {
       setStyles(data["style_data"]);
-      setFilteredStyles(data["style_data"]);
+      setFilteredStyles(Object.values(data["style_data"]));
       setUsers(data["user_info_list"]);
     }
   }, [data, currentUser]);
@@ -106,7 +105,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
               ? "add_styles_to_user"
               : "remove_styles_from_user",
           target_user_id: userIdFilter,
-          selected_styles: getSelectedStyles(filteredStyles),
+          selected_styles: getSelectedStyles(),
         },
         {
           headers: {
@@ -119,13 +118,17 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
         if (operation == "remove") {
           handleFilterByUser();
         }
+        unSelectAllStyles()
       })
       .catch((err) => {
         console.log("error", err);
         setIsLoading(false);
+        unSelectAllStyles()
       });
   };
   const handleFilterByUser = async () => {
+    // reset all selected styles 
+
     const userStyleURL = `${URL}styles_admin/${currentUser.id}`;
     setIsLoading(true);
     const result = await axios
@@ -145,8 +148,8 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
         for (const userStyle of userStylesData) {
           const styleId = userStyle["id"];
           //find the style
-          for (const [index, style] of styles.entries()) {
-            if (style && styleId == style["id"]) {
+          for (const [index, style] of Object.values(styles).entries()) {
+            if (style && typeof style == "object" && styleId == style["id"]) {
               filteredUserStyles.push({ ...style });
             }
           }
@@ -160,8 +163,8 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
   };
   const filterByModelNumber = (modelNumber) => {
     const filteredUserStyles = [];
-    for (const [index, style] of styles.entries()) {
-      if (style && modelNumber == style["model_number"]) {
+    for (const [index, style] of Object.values(styles).entries()) {
+      if (style && typeof style == "object" && style["model_number"].toLowerCase().startsWith(modelNumber)) {
         filteredUserStyles.push({ ...style });
       }
     }
@@ -177,22 +180,41 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
     });
   };
 
-  const getSelectedStyles = (styles: any) => {
+  const addStyleToCart = (addStyleId) => {
+    const stylesCopy = {...styles}
+    Object.keys(stylesCopy).forEach((styleId) => {
+      if(styleId == addStyleId){
+        stylesCopy[styleId] =  { ...stylesCopy[styleId], added_cart: true };
+      }
+      
+    });
+    setStyles(stylesCopy);
+  }
+
+  const getSelectedStyles = () => {
+    
     if (styles) {
-      return styles.filter(
-        (style) => style.hasOwnProperty("added_cart") && !!style.added_cart
+
+      const filtered =  Object.values(styles).filter(
+        (style: any) => style.hasOwnProperty("added_cart") && !!style.added_cart
       );
+      console.log('filtered', filtered)
+      return filtered
     }
     return [];
   };
-  const unSelectAllStyles = (styles: any) => {
-    console.log("style", styles);
-    const updatedStyles = styles.map((style) => {
-      return { ...style, added_cart: false };
+
+
+  const unSelectAllStyles = () => {
+    const stylesCopy = {...styles}
+    Object.keys(stylesCopy).forEach((styleId) => {
+      
+      stylesCopy[styleId] =  { ...stylesCopy[styleId], added_cart: false };
     });
-    setFilteredStyles(updatedStyles);
+    setStyles(stylesCopy);
   };
-  console.log("sty", styles);
+  console.log('styles', styles)
+  console.log('filtered styles', filteredStyles)
   return (
     <>
       {currentUser && currentUser.is_staff ? (
@@ -263,7 +285,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 }}
                 variant="contained"
                 onClick={() => {
-                  setFilteredStyles(styles);
+                  setFilteredStyles(Object.values(styles));
                 }}
               >
                 Reset to all styles
@@ -276,6 +298,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 }}
                 variant="contained"
                 onClick={async () => {
+                  unSelectAllStyles()
                   await handleFilterByUser();
                 }}
               >
@@ -334,7 +357,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 aria-label="menu"
                 style={{ backgroundColor: "cadetblue", left: "30px" }}
                 sx={{ mr: 2 }}
-                onClick={() => unSelectAllStyles(filteredStyles)}
+                onClick={() => unSelectAllStyles()}
               >
                 <CloseOutlined />
               </IconButton>
@@ -365,7 +388,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
               </IconButton>
               {modalMode == "csv_table" ? (
                 <StylesTable
-                  styles={getSelectedStyles(filteredStyles)}
+                  styles={getSelectedStyles()}
                   currentUser={currentUser}
                 />
               ) : modalMode == "add_styles" || modalMode == "remove_styles" ? (
@@ -382,8 +405,8 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                     ?
                   </Typography>
                   <Stack flexDirection={"row"} gap={"20px"}>
-                    {getSelectedStyles(filteredStyles).map(
-                      (requested_style) => {
+                    {getSelectedStyles().map(
+                      (requested_style: any) => {
                         return (
                           <Chip
                             sx={{
@@ -437,8 +460,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
 
                 const showRightIcon = currentImageIndex + 1 < numImages;
                 const showLeftIcon = currentImageIndex - 1 >= 0;
-                const addedToCart =
-                  style.hasOwnProperty("added_cart") && !!style.added_cart;
+                const addedToCart = styles[style['id']].added_cart
                 return (
                   <Card key={i}>
                     <CardMedia
@@ -501,13 +523,7 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                               }`,
                             }}
                             onClick={() => {
-                              let newStyleObj = { ...style };
-                              if (addedToCart) {
-                                newStyleObj.added_cart = false;
-                              } else {
-                                newStyleObj.added_cart = true;
-                              }
-                              updateStyleAtIndex(i, newStyleObj);
+                              addStyleToCart(style['id'])
                             }}
                           >
                             {addedToCart ? (

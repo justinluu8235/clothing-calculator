@@ -8,7 +8,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { IconButton } from "@mui/material";
+import { Icon, IconButton} from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 import Fab from "@mui/material/Fab";
@@ -19,6 +19,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import StyleRequestForm from "./StyleRequestForm";
 import CloseOutlined from "@mui/icons-material/CloseOutlined";
+import SortIcon from '@mui/icons-material/Sort';
 
 let ENDPOINT = "";
 if (process.env.NODE_ENV === "development") {
@@ -114,6 +115,16 @@ export default function ShowRoom({
     return [];
   };
 
+  const sortBySelectedStyles = () => {
+    const stylesCopy = [...styles]
+    const sortedStyles = stylesCopy.sort((a, b) => {
+      const aSelected = a.hasOwnProperty("added_cart") && !!a.added_cart 
+      const bSelected = b.hasOwnProperty("added_cart") && !!b.added_cart
+      return Number(bSelected) - Number(aSelected)
+    });
+    setStyles(sortedStyles)
+  }
+
   const unSelectAllStyles = () => {
     const updatedStyles = styles.map((style) => {
       return { ...style, added_cart: false };
@@ -173,18 +184,34 @@ export default function ShowRoom({
             >
               Request a Quotation
             </Button>
-
+            <Stack flexDirection={"column"} alignItems="center">
             <IconButton
               size="large"
               edge="start"
               color="inherit"
               aria-label="menu"
-              style={{ backgroundColor: "cadetblue", left: "30px" }}
+              style={{ backgroundColor: "cadetblue", left: "30px", width: '52px' }}
               sx={{ mr: 2 }}
               onClick={unSelectAllStyles}
             >
               <CloseOutlined />
             </IconButton>
+            <Typography variant="subtitle2" style={{position: 'relative', left: "30px"}}>Unselect All</Typography>
+            </Stack>
+            <Stack flexDirection={"column"} alignItems={"center"}>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              style={{ backgroundColor: "cadetblue", left: "80px", width: '52px'}}
+              sx={{ mr: 2 }}
+              onClick={sortBySelectedStyles}
+            >
+              <SortIcon />
+            </IconButton>
+            <Typography variant="subtitle2" style={{position: 'relative', left: "80px"}}>Sort by selected</Typography>
+            </Stack>
           </Stack>
           <Modal
             open={modalOpen}
@@ -248,7 +275,7 @@ export default function ShowRoom({
                   style.hasOwnProperty("added_cart") && !!style.added_cart;
                 
                 return (
-                  <Card key={i}>
+                  <Card key={i} sx={{border:"2px solid cadetblue"}}>
                     <CardMedia
                       sx={{ width: "300px", height: "500px" }}
                       image={currentImage}
@@ -349,15 +376,15 @@ export default function ShowRoom({
                         variant="subtitle2"
                         component="div"
                       >
-                        model number: {style.model_number}
+                        {style.model_number}
                       </Typography>
-                      {style.minimum_order_quanitity && (
+                      {style.fabric_composition && (
                         <Typography
                           gutterBottom
                           variant="subtitle2"
                           component="div"
                         >
-                          MOQ: {style.minimum_order_quanitity}
+                          {style.fabric_composition}
                         </Typography>
                       )}
                     </CardContent>
