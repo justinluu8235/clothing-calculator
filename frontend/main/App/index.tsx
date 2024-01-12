@@ -50,7 +50,7 @@ const AppWithRouter = () => {
 
   useEffect(() => {
     let token;
-    console.log("token", localStorage.getItem("jwtToken"));
+    // console.log("token", localStorage.getItem("jwtToken"));
     if (!localStorage.getItem("jwtToken")) {
       setIsAuthenticated(false);
     } else {

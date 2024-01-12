@@ -71,7 +71,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
               component="div"
               fontFamily={"fantasy"}
             >
-              Styles requested for quotation:
+              Styles requested for quotation{requested_styles.length > 0 ? ` (${requested_styles.length} styles selected)` : ""}:
             </Typography>
             <Stack flexDirection={"row"} gap={"20px"}>
               {requested_styles.length > 0 ? (
@@ -173,6 +173,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.company_name && Boolean(errors.company_name)}
                     helperText={touched.company_name && errors.company_name}
                     disabled={isSubmitting || initialValues.company_name != ""}
+                    autoComplete="off"
                   />
                   <TextField
                     sx={{ width: "300px" }}
@@ -190,6 +191,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                       touched.main_contact_name && errors.main_contact_name
                     }
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     sx={{ width: "300px" }}
@@ -202,6 +204,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.email && Boolean(errors.email)}
                     helperText={touched.email && errors.email}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     sx={{ width: "300px" }}
@@ -214,6 +217,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.phone_number && Boolean(errors.phone_number)}
                     helperText={touched.phone_number && errors.phone_number}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
 
                   <TextField
@@ -227,6 +231,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.address && Boolean(errors.address)}
                     helperText={touched.address && errors.address}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     sx={{ width: "250px" }}
@@ -239,6 +244,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.city && Boolean(errors.city)}
                     helperText={touched.city && errors.city}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     sx={{ width: "250px" }}
@@ -251,6 +257,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.state && Boolean(errors.state)}
                     helperText={touched.state && errors.state}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
 
                   <TextField
@@ -264,6 +271,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.zip_code && Boolean(errors.zip_code)}
                     helperText={touched.zip_code && errors.zip_code}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     sx={{ width: "250px" }}
@@ -276,6 +284,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                     error={touched.website && Boolean(errors.website)}
                     helperText={touched.website && errors.website}
                     disabled={isSubmitting}
+                    autoComplete="bad" //to disallow google forms
                   />
                   <TextField
                     fullWidth
@@ -300,6 +309,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                         : "ex: We have 3 boutiques in New York, LA, and Texas. Our focus is women's sweaters!"
                     }
                     disabled={isSubmitting}
+                    autoComplete="off"
                   />
                   <TextField
                     fullWidth
@@ -318,6 +328,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
                       Boolean(errors.quotation_request_notes)
                     }
                     disabled={isSubmitting}
+                    autoComplete="off"
                     helperText={
                       touched.quotation_request_notes &&
                       errors.quotation_request_notes ? (

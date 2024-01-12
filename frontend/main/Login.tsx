@@ -85,7 +85,7 @@ export default function Login({
         justifyContent={"center"}
         alignItems={"center"}
       >
-        {loggedIn && <Navigate to="/app/selected_for_you" replace={true} />}
+        {loggedIn && <Navigate to="/app/tradeshow" replace={true} />}
         {currentUser ? (
           <Typography
             variant="h6"
