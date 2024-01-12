@@ -46,7 +46,8 @@ class Sendgrid:
         request_from = requesting_user.email if requesting_user.email else requesting_user.username
         content = ""
         content = content + f"<p>Quotation Request from {request_from} (company: {company.company_name})</p>"
-        content = content + f"<p>Company info: </p>"
+        content = content + f"<p>Company info below: </p>"
+        content = content + f"<p>Company name: {company.company_name}</p>"
         content = content + f"<p>Main Contact: {company.main_contact_name}</p>"
         content = content + f"<p>Email: {company.email}</p>"
         if company.phone_number:
