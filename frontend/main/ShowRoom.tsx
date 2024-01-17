@@ -161,21 +161,23 @@ export default function ShowRoom({
             color="cadetblue"
             fontFamily={"fantasy"}
             textAlign={"center"}
+            margin="15px"
           >
             {isShowRoom
               ? "Veisais Showroom"
               : isTradeShow
-              ? "Magic Show 2024 Feb: Kachii Fashion "
+              ? "Magic Show 2024: Kaachii Apparel "
               : currentUser.company_name && currentUser.company_name.length < 40
               ? `Selected For ${currentUser.company_name}`
               : "Selected For You"}
           </Typography>
-          <Stack direction={"row"}>
+          <Stack direction={"row"} flexWrap={'wrap'} alignItems={'center'} gap="30px" justifyContent={"center"}>
             <Button
               style={{
                 backgroundColor: "whitesmoke",
                 color: "cadetblue",
                 border: "2px solid cadetblue",
+                height: '50px'
               }}
               variant="contained"
               onClick={() => {
@@ -184,19 +186,20 @@ export default function ShowRoom({
             >
               Request a Quotation
             </Button>
-            <Stack flexDirection={"column"} alignItems="center">
+            <Stack direction={"row"} gap="20px">
+            <Stack flexDirection={"column"} alignItems="center" flexWrap={'wrap'}>
             <IconButton
               size="large"
               edge="start"
               color="inherit"
               aria-label="menu"
-              style={{ backgroundColor: "cadetblue", left: "30px", width: '52px' }}
-              sx={{ mr: 2 }}
+              style={{ backgroundColor: "cadetblue",  width: '52px' }}
+              sx={{ mr: 2, marginTop: '10px' }}
               onClick={unSelectAllStyles}
             >
               <CloseOutlined />
             </IconButton>
-            <Typography variant="subtitle2" style={{position: 'relative', left: "30px"}}>Unselect All</Typography>
+            <Typography variant="subtitle2" style={{position: 'relative', }}>Unselect All</Typography>
             </Stack>
             <Stack flexDirection={"column"} alignItems={"center"}>
             <IconButton
@@ -204,13 +207,14 @@ export default function ShowRoom({
               edge="start"
               color="inherit"
               aria-label="menu"
-              style={{ backgroundColor: "cadetblue", left: "80px", width: '52px'}}
-              sx={{ mr: 2 }}
+              style={{ backgroundColor: "cadetblue",  width: '52px'}}
+              sx={{ mr: 2, marginTop: '10px'}}
               onClick={sortBySelectedStyles}
             >
               <SortIcon />
             </IconButton>
-            <Typography variant="subtitle2" style={{position: 'relative', left: "80px"}}>Sort by selected</Typography>
+            <Typography variant="subtitle2" style={{position: 'relative', }}>Sort by selected</Typography>
+            </Stack>
             </Stack>
           </Stack>
           <Modal
