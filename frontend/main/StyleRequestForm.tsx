@@ -69,7 +69,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
               gutterBottom
               variant="h6"
               component="div"
-              fontFamily={"fantasy"}
+              fontFamily={"Apple Chancery"}
             >
               Styles requested for quotation{requested_styles.length > 0 ? ` (${requested_styles.length} styles selected)` : ""}:
             </Typography>
@@ -99,7 +99,7 @@ export default function StyleRequestForm({ requested_styles, currentUser, isTrad
             gutterBottom
             variant="h6"
             component="div"
-            fontFamily={"fantasy"}
+            fontFamily={"Apple Chancery"}
           >
             Company Information:
           </Typography>

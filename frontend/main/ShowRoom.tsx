@@ -159,7 +159,7 @@ export default function ShowRoom({
             variant="h3"
             component="div"
             color="cadetblue"
-            fontFamily={"fantasy"}
+            fontFamily={"Apple Chancery"}
             textAlign={"center"}
             margin="15px"
           >

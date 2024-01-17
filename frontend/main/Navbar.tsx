@@ -62,8 +62,9 @@ export default function NavBar({ currentUser, handleLogout }: NavBarProps) {
           <Typography
             variant="h6"
             textAlign={"center"}
-            fontFamily={"fantasy"}
-            sx={{ flexGrow: 2 }}
+            fontFamily={"Apple Chancery"}
+            style={{textAlign:'center'}}
+            sx={{ flexGrow: 2}}
           >
             Veisais
           </Typography>
@@ -72,10 +73,10 @@ export default function NavBar({ currentUser, handleLogout }: NavBarProps) {
               <Typography
                 variant="caption"
                 textAlign={"right"}
-                fontFamily={"fantasy"}
+                fontFamily={"Apple Chancery"}
                 sx={{ flexGrow: 0 }}
               >
-                {currentUser.email} |
+                {currentUser.email.length > 8 ? `${currentUser.email.substring(0, 8)}...` : currentUser.email} |
               </Typography>
               <Button color="inherit" onClick={handleLogout}>
                 Logout

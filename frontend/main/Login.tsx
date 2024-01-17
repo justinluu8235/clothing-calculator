@@ -91,7 +91,7 @@ export default function Login({
             variant="h6"
             component="h6"
             textAlign={"center"}
-            fontFamily={"fantasy"}
+            fontFamily={"Apple Chancery"}
           >
             Logged in as {currentUser.email}
           </Typography>
@@ -107,7 +107,7 @@ export default function Login({
               variant="h2"
               component="h2"
               textAlign={"center"}
-              fontFamily={"fantasy"}
+              fontFamily={"Apple Chancery"}
             >
               Veisais
             </Typography>
