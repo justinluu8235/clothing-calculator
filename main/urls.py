@@ -1,6 +1,6 @@
 from django.urls import re_path, path
 from .views import (StyleCalculatorView, UserStylesView, QuotationRequestView,
-                    TradeshowStylesView, ShowroomStylesView, StylesAdminView
+                    TradeshowStylesView, ShowroomStylesView, StylesAdminView, StyleImageDownloadView
                     )
 from . import views
 
@@ -12,6 +12,7 @@ urlpatterns = [
     path('showroom_styles/<int:user_id>', ShowroomStylesView.as_view(), name='showroom_styles'),
     path('styles_admin/<int:user_id>', StylesAdminView.as_view(), name='styles_admin'),
     path('quotation_request/<int:user_id>', QuotationRequestView.as_view(), name='quotation_request'),
+    path('style_images_download/<int:user_id>', StyleImageDownloadView.as_view(), name='style_images_download'),
     re_path(r"", views.index, name='index'),
 
 ]

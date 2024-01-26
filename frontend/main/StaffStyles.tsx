@@ -213,8 +213,51 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
     });
     setStyles(stylesCopy);
   };
-  console.log('styles', styles)
-  console.log('filtered styles', filteredStyles)
+
+  const downloadStyleImages = () => {
+    const selectedStyles = getSelectedStyles()
+
+    const downloadURL = `${URL}style_images_download/`
+    setIsLoading(true);
+    axios
+    .post(
+      `${downloadURL}${currentUser.id}`,
+      { styles: selectedStyles },
+      {
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        responseType: 'arraybuffer',
+      }
+    )
+    .then((response) => {
+      console.log("response", response);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'downloaded_images.zip';
+
+      // Append the link to the body and trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+
+      // Clean up the Blob URL
+      window.URL.revokeObjectURL(url);
+      setIsLoading(false);
+
+    })
+    .catch((err) => {
+      console.log("error", err);
+      setIsLoading(false);
+    });
+
+  }
+
   return (
     <>
       {currentUser && currentUser.is_staff ? (
@@ -349,6 +392,17 @@ export default function StaffStyles({ currentUser }: StaffStylesProps) {
                 }}
               >
                 Export CSV
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "whitesmoke",
+                  color: "cadetblue",
+                  border: "2px solid cadetblue",
+                }}
+                variant="contained"
+                onClick={downloadStyleImages}
+              >
+                Download Images
               </Button>
               <IconButton
                 size="large"

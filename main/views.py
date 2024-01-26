@@ -1,9 +1,18 @@
+import io
+import shutil
+import tempfile
+
+import requests
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import View
 from rest_framework.response import Response
 from django.http import JsonResponse
 from .sendgrid import Sendgrid
+import os
+from django.http import HttpResponse
+import zipfile
+from django.core.files.storage import default_storage
 
 
 from .models import StylePricePoint, QuantityRange, FabricType, StyleCategory, UserStyle, Style, ClientCompany, \
@@ -282,5 +291,40 @@ class QuotationRequestView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
         return JsonResponse({'error': ''})
+
+class StyleImageDownloadView(View):
+    def post(self, request, user_id):
+        try:
+            user = User.objects.get(pk=user_id)
+            if not user.is_staff:
+                return Response(data={"error": "access denied. not staff"}, status=400)
+            validate_token(request.headers.get("Authorization"), user_id)
+        except Exception as e:
+            return Response(data={"error": "access denied..who are you?"}, status=400)
+
+        data = json.loads(request.body)
+        styles = data.get('styles')
+        zip_buffer = io.BytesIO()
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            with zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED, allowZip64=True) as zip_file:
+
+                for style in styles:
+                    style = Style.objects.get(pk=style['id'])
+                    style_image = style.images.first()
+                    image_name = style_image.image.name
+                    image_url = default_storage.url(image_name)
+
+                    image_data = requests.get(image_url).content
+                    zip_file.writestr(os.path.basename(image_name), image_data)
+
+        zip_buffer.seek(0)
+        response = HttpResponse(content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename=downloaded_images.zip'
+        with open(temp_file.name, 'rb') as zip_file:
+            shutil.copyfileobj(zip_file, response)
+        return response
+
+
+
 
 
